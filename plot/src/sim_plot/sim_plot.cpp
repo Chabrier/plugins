@@ -91,6 +91,19 @@ QWidget *SimPlot::getWidget()
     mWidgetTab = new SimTab();
     return mWidgetTab;
 }
+/**
+ * @brief Delete the main widget (when tab is closed without plugin unload)
+ */
+void SimPlot::delWidget()
+{
+    // If widget is not allocated, nothing to do
+    if (mWidgetTab == 0)
+        return;
+
+    // Delete widget and clear pointer
+    delete mWidgetTab;
+    mWidgetTab = 0;
+}
 
 /**
  * @brief SimPlot::getWidgetToolbar
@@ -103,6 +116,21 @@ QWidget *SimPlot::getWidgetToolbar()
 
     mWidgetToolbar = new widToolbar();
     return mWidgetToolbar;
+}
+
+/**
+ * @brief delWidgetToolbar
+ *        Delete the toolbar widget (when tab is closed without plugin unload)
+ */
+void SimPlot::delWidgetToolbar()
+{
+    // If widget is not allocated, nothing to do
+    if (mWidgetToolbar == 0)
+        return;
+
+    // Delete widget and clear pointer
+    delete mWidgetToolbar;
+    mWidgetToolbar = 0;
 }
 
 /**
@@ -191,21 +219,30 @@ void SimPlot::updatePlotSig(plotSignal *plot)
  * @brief SimPlot::setVpz
  *        Set the VPZ package used for the simulation
  */
-void SimPlot::setVpz(vle::vpz::Vpz *vpz)
+void SimPlot::setVpz(vleVpz *vpz)
 {
     mVpz = vpz;
+
+    vle::vpz::Vpz   *oldVpz;
+
+    // NOTE - View list is loaded from disk using vle::Vpz
+    // only because GVLE2::vleVpz does not support views
+    // direct access yet. This must be changed in future.
+
+    QString fileName = vpz->getFilename();
+    oldVpz = new vle::vpz::Vpz(fileName.toStdString());
+
     vle::vpz::Observables curVpzObs;
     vle::vpz::Views       curVpzViews;
 
-    curVpzViews  = mVpz->project().experiment().views();
-    curVpzObs    = mVpz->project().experiment().views().observables();
-
+    curVpzViews  = oldVpz->project().experiment().views();
+    curVpzObs    = oldVpz->project().experiment().views().observables();
 
     if ( getWidget() )
     {
         // Update the title (Experiment Name and VPZ file name)
-        QString expName = mVpz->project().experiment().name().c_str();
-        QString simTitle = QString("%1 (%2)").arg(expName).arg(mVpz->filename().c_str());
+        QString expName = oldVpz->project().experiment().name().c_str();
+        QString simTitle = QString("%1 (%2)").arg(expName).arg(oldVpz->filename().c_str());
         mWidgetTab->setModelName(simTitle);
 
         QObject::connect(mWidgetTab, SIGNAL(doStartStop()),
@@ -214,7 +251,7 @@ void SimPlot::setVpz(vle::vpz::Vpz *vpz)
 
     if ( getWidgetToolbar() )
     {
-        mWidgetToolbar->buildTree(mVpz);
+        mWidgetToolbar->buildTree(oldVpz);
 
         QObject::connect(mWidgetToolbar, SIGNAL(addSig    (plotSignal *)),
                          this,           SLOT  (addPlotSig(plotSignal *)));
@@ -260,7 +297,16 @@ void SimPlot::startStop()
 
 void SimPlot::simulationStart()
 {
-    mSimThread = new simPlotThread(mVpz);
+    vle::vpz::Vpz   *oldVpz;
+
+    // NOTE - View list is loaded from disk using vle::Vpz
+    // only because GVLE2::vleVpz does not support views
+    // direct access yet. This must be changed in future.
+
+    QString fileName = mVpz->getFilename();
+    oldVpz = new vle::vpz::Vpz(fileName.toStdString());
+
+    mSimThread = new simPlotThread(oldVpz);
 
     // Load and init the simulation into VLE
     try {
@@ -293,8 +339,8 @@ void SimPlot::simulationStart()
 
     //ui->buttonGo->setIcon(*(new QIcon(":/icon/resources/control_pause_blue.png")));
 
-    QString expName = mVpz->project().experiment().name().c_str();
-    mDuration = mVpz->project().experiment().duration();
+    QString expName = oldVpz->project().experiment().name().c_str();
+    mDuration = oldVpz->project().experiment().duration();
     QString startMessage;
     startMessage  = tr("Simulation started. ");
     startMessage += tr("Experiment name: ") + expName + " ";
@@ -317,9 +363,18 @@ void SimPlot::simulationStart()
  */
 void SimPlot::simulationGetStep()
 {
+    vle::vpz::Vpz   *oldVpz;
+
+    // NOTE - View list is loaded from disk using vle::Vpz
+    // only because GVLE2::vleVpz does not support views
+    // direct access yet. This must be changed in future.
+
+    QString fileName = mVpz->getFilename();
+    oldVpz = new vle::vpz::Vpz(fileName.toStdString());
+
     // Update the progress bar
     double debugTime = mSimThread->getCurrentTime();
-    double debugElapsed = debugTime - mVpz->project().experiment().begin();
+    double debugElapsed = debugTime - oldVpz->project().experiment().begin();
     double percent = (debugElapsed / mDuration) * 100.00;
     mWidgetTab->progressBar(percent);
 

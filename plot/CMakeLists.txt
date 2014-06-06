@@ -78,7 +78,7 @@ find_package(Boost COMPONENTS unit_test_framework date_time thread filesystem sy
 ##
 ## Find Qt
 ##
-
+set(QT_USE_QTXML TRUE)
 find_package(Qt4 REQUIRED)
 
 ##

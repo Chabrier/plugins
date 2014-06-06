@@ -32,10 +32,12 @@ public:
     ~SimPlot();
     QString getname();
     QWidget *getWidget();
+    void     delWidget();
     QWidget *getWidgetToolbar();
+    void     delWidgetToolbar();
     void setSettings(QSettings *s);
     void setLogger(Logger *logger);
-    void setVpz(vle::vpz::Vpz *vpz);
+    void setVpz(vleVpz *vpz);
     void *getVpz();
     void setPackage(vle::utils::Package *pkg);
 
@@ -57,7 +59,7 @@ private:
     Logger                *  mLogger;
     SimTab                *  mWidgetTab;
     widToolbar            *  mWidgetToolbar;
-    vle::vpz::Vpz         *  mVpz;
+    vleVpz                *  mVpz;
     vle::utils::Package   *  mCurrPackage;
     QList<plotSignal *>      mPlotSignals;
     QThread               *  mThread;
