@@ -64,6 +64,19 @@ FIND_PACKAGE(VleCheckAndDeclareGeneratedModels REQUIRED)
 SET(VLE_ABI_VERSION 1.1)
 
 ##
+## Check GVLE and package dependencies
+##
+option(WITH_GVLE2 "use the GVLE [default: on]" ON)
+
+if (WITH_GVLE2)
+  find_package(GVLE2)
+  if (GVLE2_FOUND)
+    set (HAVE_GVLE2 1 CACHE INTERNAL "" FORCE)
+  else ()
+    message (WARNING "GVLE2 not found!")
+  endif ()
+endif ()
+##
 ## Find boost
 ##
 
