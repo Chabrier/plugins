@@ -45,8 +45,7 @@ add_library(sim_plot SHARED ${plot_SOURCES}
 
 target_link_libraries(sim_plot qwt ${QT_LIBRARIES} ${INTL_LIB} ${VLE_LIBRARIES} ${GVLE2_LIBRARIES})
 
-message(STATUS "??? ${VLE_LIBRARIES}")
-
+message(STATUS "??? ${VLE_LIBRARIES} et ${GVLE2_LIBRARIES}")
 
 ##
 ## install
