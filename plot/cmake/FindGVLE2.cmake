@@ -77,7 +77,7 @@ endif ()
 # Find GVLE2
 #
 
-if (${_find_gvle_using_cmake})
+if (${_find_gvle2_using_cmake})
   find_path(_gvle2_base_include zlib.h PATHS
     $ENV{VLE_BASEPATH}/include
     ${VLE_BASEPATH_LOCAL}/include
@@ -118,12 +118,9 @@ if (${_find_gvle_using_cmake})
   set (GVLE2_LIBRARIES
     gvle2-1.1 intl)
 else () # find gvle using pkg-config
-
-  message("Here?")
   find_package(PkgConfig REQUIRED)
   PKG_CHECK_MODULES(GVLE2 gvle2-1.1)
 endif ()
-  message("What do we have ${GVLE2_INCLUDE_DIRS} but also ${GVLE2_LIBRARIES}")
 # handle the QUIETLY and REQUIRED arguments and set GVLE2_FOUND to TRUE if all
 # listed variables are TRUE
 include(FindPackageHandleStandardArgs)
