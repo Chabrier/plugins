@@ -86,17 +86,7 @@ endif (WIN32)
 
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREAD ON)
-find_package(Boost COMPONENTS unit_test_framework date_time thread filesystem system chrono regex program_options )
-
-##
-## Find Qt
-##
-set(QT_USE_QTXML TRUE)
-find_package(Qt4 REQUIRED)
-
-##
-##
-##
+find_package(Boost COMPONENTS unit_test_framework date_time thread filesystem system chrono regex program_options)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(XMLDEPS libxml-2.0)

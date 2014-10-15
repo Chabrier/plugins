@@ -1,4 +1,4 @@
-# FindGVLE.cmake
+# FindGVLE2.cmake
 # ==============
 #
 # Try to find GVLE2
@@ -109,14 +109,29 @@ if (${_find_gvle2_using_cmake})
      message (FATAL_ERROR "Missing gvle2 dependencies")
   endif ()
 
+  set(ENV(QTDIR)  ${_gvle2_base_include}/../Qt)
+
+  set(CMAKE_INCLUDE_CURRENT_DIR ON)
+  set(CMAKE_AUTOMOC ON)
+
+  set(QT_USE_QTXML TRUE)
+  set(QT_USE_QTHELP TRUE)
+
+  find_package(Qt4 REQUIRED)
+  if (NOT QT_FOUND)
+    message(FATAL_ERROR "Qt is required")
+  endif (NOT QT_FOUND)
+  include(${QT_USE_FILE})
+
   set(GVLE2_INCLUDE_DIRS
-    ${_gvle2_base_include}/vle-1.1; ${_gvle2_base_include})
+    ${_gvle2_base_include}/vle-1.1; ${_gvle2_base_include};
+    ${QT_INCLUDES})
 
   set (GVLE2_LIBRARY_DIRS
-    ${_gvle2_base_bin}; ${_gvle2_base_lib})
+    ${_gvle2_base_bin}; ${_gvle2_base_lib}; ${QT_BINARY_DIR}; ${QT_LIBRARY_DIR})
 
   set (GVLE2_LIBRARIES
-    gvle2-1.1 intl)
+    gvle2-1.1 ${QT_LIBRARIES} intl)
 else () # find gvle using pkg-config
   find_package(PkgConfig REQUIRED)
   PKG_CHECK_MODULES(GVLE2 gvle2-1.1)
