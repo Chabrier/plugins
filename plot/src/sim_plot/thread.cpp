@@ -7,6 +7,7 @@
  *
  */
 #include "thread.h"
+#include <QElapsedTimer>
 
 simPlotThread::simPlotThread(vle::vpz::Vpz *vpz)
 {
@@ -145,6 +146,9 @@ void simPlotThread::forceQuit()
 void simPlotThread::run()
 {
     mCurrentState = Play;
+    QElapsedTimer timer;
+    timer.start();
+
 
     while((mCurrentState == Play) || (mCurrentState == Pause))
     {
@@ -158,11 +162,16 @@ void simPlotThread::run()
 
         try {
             mValueMutex.lock();
-            if (mRoot->run() == false)
+            if (mRoot->run() == false) {
+                emit step();
                 mCurrentState = Finish;
+            }
             mValueMutex.unlock();
             // Notify the view
-            emit step();
+            if (timer.hasExpired(100)) { //TODO should be a parameter
+                emit step();
+                timer.restart();
+            }
         } catch (const std::exception& e) {
             mErrorMessage = QString(e.what());
         }
