@@ -64,7 +64,6 @@ private:
     QList<plotSignal *>      mPlotSignals;
     QThread               *  mThread;
     simPlotThread         *  mSimThread;
-    vle::value::Map       *  mOutputs;
     QMap<QString, int>       mViewLastRow;
     bool                     mSimDataValid;
     int                      mStepCount;

@@ -45,36 +45,39 @@ simPlotThread::~simPlotThread()
  * @brief simPlotThread::getOutputs
  *        Get the map of ouputs datas
  *
- * This method take place into -simulationView- thread!
+ * WARNING: should be surrounded by a mutex lock is used
  */
 vle::value::Map *simPlotThread::getOutputs()
 {
-    if (mOutputs == 0)
-        mOutputs = mRoot->outputs();
-
     return mOutputs;
 }
 
-vle::value::Matrix *simPlotThread::getMatrix(vle::value::Value *value)
+/**
+ * @brief simPlotThread::updateOutputs
+ *        Copy the current outputs form RootCoordinator
+ *
+ * This method take place into -simulationView- thread!
+ */
+void simPlotThread::updateOutputs()
 {
-    vle::value::Matrix *mat;
     mValueMutex.lock();
-    mat = new vle::value::Matrix(value->toMatrix());
+    delete mOutputs;
+    if (mRoot->outputs()) {
+        mOutputs = new vle::value::Map(*mRoot->outputs());
+    }
+    mTimeOfOutputs = mRoot->getCurrentTime();
     mValueMutex.unlock();
-    return mat;
 }
 
 /**
- * @brief simPlotThread::getOutputs
+ * @brief simPlotThread::getTimeOfOutputs
  *        Get the map of ouputs datas
  *
  * This method can be executed in both threads
  */
-double simPlotThread::getCurrentTime()
+double simPlotThread::getTimeOfOutputs()
 {
-    double currentTime = mRoot->getCurrentTime();
-
-    return currentTime;
+    return mTimeOfOutputs;
 }
 
 /**
@@ -161,14 +164,14 @@ void simPlotThread::run()
         }
 
         try {
-            mValueMutex.lock();
             if (mRoot->run() == false) {
+                updateOutputs();
                 emit step();
                 mCurrentState = Finish;
             }
-            mValueMutex.unlock();
             // Notify the view
             if (timer.hasExpired(100)) { //TODO should be a parameter
+                updateOutputs();
                 emit step();
                 timer.restart();
             }

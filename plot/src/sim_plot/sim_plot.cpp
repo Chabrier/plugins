@@ -317,7 +317,6 @@ void SimPlot::simulationStart()
         mSimThread->setOutputPath(path.c_str());
         mSimThread->load();
         mSimThread->init();
-        mOutputs = mSimThread->getOutputs();
     } catch (...) {
         mWidgetTab->progressBar(tr("Fatal Error"));
         QString logMessage;
@@ -373,17 +372,23 @@ void SimPlot::simulationGetStep()
     oldVpz = new vle::vpz::Vpz(fileName.toStdString());
 
     // Update the progress bar
-    double debugTime = mSimThread->getCurrentTime();
+    double debugTime = mSimThread->getTimeOfOutputs();
+
     double debugElapsed = debugTime - oldVpz->project().experiment().begin();
     double percent = (debugElapsed / mDuration) * 100.00;
+    if (percent > 100) {
+        percent = 100;
+    }
+
     mWidgetTab->progressBar(percent);
 
-    if (mOutputs)
+    mSimThread->mValueMutex.lock();
+    if (mSimThread->getOutputs())
     {
         try {
         uint i;
-        vle::value::Map::iterator itb = mOutputs->begin();
-        vle::value::Map::iterator ite = mOutputs->end();
+        vle::value::Map::iterator itb = mSimThread->getOutputs()->begin();
+        vle::value::Map::iterator ite = mSimThread->getOutputs()->end();
         for (; itb != ite; itb++)
         {
             QString matViewName = QString::fromStdString(itb->first);
@@ -392,7 +397,7 @@ void SimPlot::simulationGetStep()
                 continue;
 
             vle::value::Matrix* mat;
-            mat = mSimThread->getMatrix(itb->second);
+            mat = dynamic_cast<vle::value::Matrix*>(itb->second);
             if (mat == 0)
             {
                 QString logMessage;
@@ -404,7 +409,6 @@ void SimPlot::simulationGetStep()
             // If no result available, nothing more to do
             if (mat->rows() == 0)
             {
-                delete mat;
                 continue;
             }
 
@@ -424,7 +428,6 @@ void SimPlot::simulationGetStep()
                     log(logMessage);
                     mSimDataValid = false;
                 }
-                delete mat;
                 continue;
             }
 
@@ -507,7 +510,6 @@ void SimPlot::simulationGetStep()
                 }
             }
             mViewLastRow.operator[] (matViewName) = i;
-            delete mat;
         } // for { } mOutputs iterator
 
         mWidgetTab->updatePlot();
@@ -515,7 +517,9 @@ void SimPlot::simulationGetStep()
         } catch(...) {
             //
         }
+
     }
+    mSimThread->mValueMutex.unlock();
 
     mStepCount++;
 }

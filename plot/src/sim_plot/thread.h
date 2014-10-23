@@ -32,9 +32,9 @@ public:
     void   setPause(bool pause);
     void   forceQuit();
     void   setOutputPath(QString path);
-    double getCurrentTime();
+    double getTimeOfOutputs();
     vle::value::Map    *getOutputs();
-    vle::value::Matrix *getMatrix(vle::value::Value *value);
+    void   updateOutputs();
     void   load();
     void   init();
     void   finish();
@@ -45,6 +45,8 @@ public slots:
 signals:
      void step();
      void end();
+public:
+    QMutex                      mValueMutex;
 
 private:
     enum State { Wait, Init, Play, Error, Finish, Close, Pause };
@@ -52,11 +54,11 @@ private:
     State                       mCurrentState;
     QString                     mErrorMessage;
     QString                     mOutputPath;
-    QMutex                      mValueMutex;
     vle::vpz::Vpz              *mVpz;
     vle::devs::RootCoordinator *mRoot;
     vle::value::Map            *mOutputs;
     vle::utils::ModuleManager   mLoadedPlugin;
+    double                      mTimeOfOutputs;
 };
 
 #endif // THREAD_H
