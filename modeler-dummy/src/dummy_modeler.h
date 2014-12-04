@@ -26,6 +26,8 @@ public:
     ModelerDummy();
     ~ModelerDummy();
     QString getname();
+    QString getData(QString className);
+public:
     bool     useCustomMainTab();
     QWidget *getMainTabWidget();
     void     delWidget();
