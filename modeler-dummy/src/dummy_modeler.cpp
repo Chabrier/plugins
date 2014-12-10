@@ -139,10 +139,17 @@ QWidget *ModelerDummy::addNewWidget()
  * @brief ModelerDummy::addEditWidget
  *        Create a new tab to edit an existing class
  */
-QWidget *ModelerDummy::addEditWidget()
+QWidget *ModelerDummy::addEditWidget(sourceCpp *src)
 {
     EditWidget *newTab = new EditWidget();
+    newTab->setModeEdit();
     mWidgetEdit.append(newTab);
+
+    sourceCppTemplate *tpl = src->getTemplate();
+
+    // Search the class name from tag
+    newTab->setClassName( tpl->getTagValue("class") );
+
     return newTab;
 }
 

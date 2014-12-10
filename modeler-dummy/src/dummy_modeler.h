@@ -32,7 +32,7 @@ public:
     QWidget *getMainTabWidget();
     void     delWidget();
     QWidget *addNewWidget();
-    QWidget *addEditWidget();
+    QWidget *addEditWidget(sourceCpp *src);
     void setSettings(QSettings *s);
     void setLogger(Logger *logger);
 
