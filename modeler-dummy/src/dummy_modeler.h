@@ -16,6 +16,7 @@
 #include <vle/gvle2/logger.h>
 #include "tabwidget.h"
 #include "editwidget.h"
+#include "editmodel.h"
 
 class ModelerDummy : public PluginModeler
 {
@@ -30,9 +31,10 @@ public:
 public:
     bool     useCustomMainTab();
     QWidget *getMainTabWidget();
-    void     delWidget();
     QWidget *addNewWidget();
     QWidget *addEditWidget(sourceCpp *src);
+    QWidget *addEditModel(vleVpzModel *model);
+    void     initExpCond(vpzExpCond *exp, sourceCpp *src);
     void setSettings(QSettings *s);
     void setLogger(Logger *logger);
 

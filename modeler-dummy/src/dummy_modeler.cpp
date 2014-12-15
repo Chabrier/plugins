@@ -112,10 +112,6 @@ QWidget *ModelerDummy::getMainTabWidget()
     mWidgetTab = new TabWidget();
     return mWidgetTab;
 }
-void ModelerDummy::delWidget()
-{
-    return;
-}
 
 /**
  * @brief ModelerDummy::addNewWidget
@@ -151,6 +147,19 @@ QWidget *ModelerDummy::addEditWidget(sourceCpp *src)
     newTab->setClassName( tpl->getTagValue("class") );
 
     return newTab;
+}
+
+QWidget *ModelerDummy::addEditModel(vleVpzModel *model)
+{
+    (void) model;
+    return new EditModel();
+}
+
+void ModelerDummy::initExpCond(vpzExpCond *exp, sourceCpp *src)
+{
+    (void) exp;
+    (void) src;
+    return;
 }
 
 void ModelerDummy::onNameChange(QString name)

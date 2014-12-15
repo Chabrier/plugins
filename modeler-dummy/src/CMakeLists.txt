@@ -30,13 +30,15 @@ endif (VLE_VERSION)
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 
-SET(dummy_SOURCES dummy_modeler.cpp tabwidget.cpp editwidget.cpp)
+SET(dummy_SOURCES dummy_modeler.cpp tabwidget.cpp editwidget.cpp
+    editmodel.cpp)
 
 QT4_WRAP_UI(ui_tabwidget_h tabwidget.ui)
 QT4_WRAP_UI(ui_editwidget_h editwidget.ui)
+QT4_WRAP_UI(ui_editmodel_h  editmodel.ui)
 
 add_library(modeler_dummy SHARED ${dummy_SOURCES}
-  ${ui_tabwidget_h} ${ui_editwidget_h} )
+  ${ui_tabwidget_h} ${ui_editwidget_h} ${ui_editmodel_h} )
 
 target_link_libraries(modeler_dummy ${QT_LIBRARIES} ${INTL_LIB})
 
