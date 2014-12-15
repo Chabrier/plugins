@@ -8,7 +8,6 @@
  */
 #include <QObject>
 #include <QtPlugin>
-#include <QDebug>
 #include "modelerde.h"
 #include "modelerde.h"
 #include "tabwidget.h"
@@ -52,8 +51,6 @@ QString ModelerDifferenceEquation::getData(QString className)
     }
     if (w == 0)
         return QString();
-
-    qDebug() << "ModelerDifferenceEquation::getData() " << className;
 
     QString tplHead = "/**\n"                                    \
             "  * @file {{classname}}.cpp\n"                      \
@@ -131,10 +128,6 @@ QWidget *ModelerDifferenceEquation::getMainTabWidget()
     mWidgetTab = new TabWidget();
     return mWidgetTab;
 }
-void ModelerDifferenceEquation::delWidget()
-{
-    return;
-}
 
 /**
  * @brief ModelerDifferenceEquation::addNewWidget
@@ -158,7 +151,6 @@ QWidget *ModelerDifferenceEquation::addNewWidget()
  * @brief ModelerDifferenceEquation::addEditWidget
  *        Create a new tab to edit an existing class
  */
-#include <QDebug>
 QWidget *ModelerDifferenceEquation::addEditWidget(sourceCpp *src)
 {
     EditWidget *newTab = new EditWidget();
@@ -182,6 +174,46 @@ QWidget *ModelerDifferenceEquation::addEditWidget(sourceCpp *src)
     }
 
     return newTab;
+}
+
+/**
+ * @brief ModelerDifferenceEquation::addEditModel
+ *        Create a new tab to edit an existing class
+ */
+QWidget *ModelerDifferenceEquation::addEditModel(vleVpzModel *model)
+{
+    EditModel *widget = new EditModel();
+    widget->setModel(model);
+
+    return widget;
+}
+
+/**
+ * @brief ModelerDifferenceEquation::initExpCond
+ *        Init an exprimental condition according to template parameters
+ */
+void ModelerDifferenceEquation::initExpCond(vpzExpCond *exp, sourceCpp *src)
+{
+    sourceCppTemplate *tpl = src->getTemplate();
+
+    if (tpl->tagArrayLoad("par"))
+    {
+        int n = tpl->getTagArrayCount();
+        for (int i = 0; i < n; i++)
+        {
+            QString pname  = tpl->getTagArrayName(i);
+            QString pvalue = tpl->getTagArrayValue(i);
+
+            // Create a new port for this parameter
+            vpzExpCondPort  *port = new vpzExpCondPort(exp);
+            port->setName(pname);
+            // Insert a double value to the port
+            vpzExpCondValue *v = port->createValue(vpzExpCondValue::TypeDouble);
+            v->setDouble( pvalue.toDouble() );
+            // Then, insert the new port to experimental condition
+            exp->addPort(port);
+        }
+    }
 }
 
 void ModelerDifferenceEquation::onNameChange(QString name)

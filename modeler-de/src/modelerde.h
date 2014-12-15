@@ -11,11 +11,14 @@
 
 #include <QObject>
 #include <QSettings>
+#include <vle/gvle2/sourcecpp.h>
+#include <vle/gvle2/vpzexpcond.h>
 #include <vle/gvle2/vlevpz.h>
 #include <vle/gvle2/plugin_modeler.h>
 #include <vle/gvle2/logger.h>
 #include "tabwidget.h"
 #include "editwidget.h"
+#include "editmodel.h"
 
 class ModelerDifferenceEquation : public PluginModeler
 {
@@ -30,9 +33,10 @@ public:
 public:
     bool     useCustomMainTab();
     QWidget *getMainTabWidget();
-    void     delWidget();
     QWidget *addNewWidget();
     QWidget *addEditWidget(sourceCpp *src);
+    QWidget *addEditModel(vleVpzModel *model);
+    void     initExpCond(vpzExpCond *exp, sourceCpp *src);
     void setSettings(QSettings *s);
     void setLogger(Logger *logger);
 
