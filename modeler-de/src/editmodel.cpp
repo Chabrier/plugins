@@ -84,6 +84,10 @@ void EditModel::setModel(vleVpzModel *model)
             QString pname  = tpl->getTagArrayName(i);
             QString pvalue = tpl->getTagArrayValue(i);
 
+            vpzExpCondPort  *eport = exp->getPort(pname);
+            if (eport == 0)
+                continue;
+
             QTableWidgetItem *itemName = new QTableWidgetItem(pname);
             itemName->setFlags(Qt::ItemIsEnabled);
             ui->tableParameters->setItem(i, 0, itemName);
@@ -92,7 +96,6 @@ void EditModel::setModel(vleVpzModel *model)
             itemDefault->setFlags(Qt::ItemIsEnabled);
             ui->tableParameters->setItem(i, 1, itemDefault);
 
-            vpzExpCondPort  *eport = exp->getPort(pname);
             vpzExpCondValue *eval  = eport->getValue();
             QString curVal;
             curVal.setNum(eval->getDouble());

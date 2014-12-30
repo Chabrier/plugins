@@ -16,7 +16,6 @@
 #include <vle/gvle2/vlevpz.h>
 #include <vle/gvle2/plugin_modeler.h>
 #include <vle/gvle2/logger.h>
-#include "tabwidget.h"
 #include "editwidget.h"
 #include "editmodel.h"
 
@@ -32,9 +31,10 @@ public:
     QString getData(QString className);
 public:
     bool     useCustomMainTab();
-    QWidget *getMainTabWidget();
     QWidget *addNewWidget();
     QWidget *addEditWidget(sourceCpp *src);
+    QWidget *getEditClass(sourceCpp *src);
+    void     closeEditClass(sourceCpp *src);
     QWidget *addEditModel(vleVpzModel *model);
     void     initExpCond(vpzExpCond *exp, sourceCpp *src);
     void setSettings(QSettings *s);
@@ -43,6 +43,7 @@ public:
 public slots:
     void onNameChange(QString name);
     void onSaveClass();
+    void onEditDeleted(QObject *obj);
 signals:
     void nameChanged(QWidget *tab, QString name);
     void saveClass(QString name);
@@ -51,7 +52,6 @@ private:
     QString             mName;
     QSettings         * mSettings;
     Logger            * mLogger;
-    TabWidget         * mWidgetTab;
     QList<EditWidget *> mWidgetEdit;
 };
 

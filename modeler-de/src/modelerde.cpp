@@ -10,7 +10,6 @@
 #include <QtPlugin>
 #include "modelerde.h"
 #include "modelerde.h"
-#include "tabwidget.h"
 #include <iostream>
 #include <sstream>
 #include <vle/gvle2/sourcecpp.h>
@@ -21,7 +20,6 @@
 ModelerDifferenceEquation::ModelerDifferenceEquation() {
     mLogger    = 0;
     mSettings  = 0;
-    mWidgetTab = 0;
     mWidgetEdit.clear();
     mName = "DifferenceEquation";
 }
@@ -113,20 +111,17 @@ bool ModelerDifferenceEquation::useCustomMainTab()
     return false;
 }
 
-/**
- * @brief ModelerDifferenceEquation::getWidget
- *        Create the plugin GUI (widget inserted into main app tab)
- */
-QWidget *ModelerDifferenceEquation::getMainTabWidget()
+void ModelerDifferenceEquation::onEditDeleted(QObject *obj)
 {
-    // If the widget has already been allocated
-    if (mWidgetTab)
-        // return saved pointer
-        return mWidgetTab;
+    for (int i = 0; i < mWidgetEdit.count(); i++)
+    {
+        EditWidget *ew = mWidgetEdit.at(i);
+        if (ew != obj)
+            continue;
 
-    // Allocate (and return) a new Simulation Tab widget
-    mWidgetTab = new TabWidget();
-    return mWidgetTab;
+        mWidgetEdit.removeAt(i);
+        break;
+    }
 }
 
 /**
@@ -139,6 +134,8 @@ QWidget *ModelerDifferenceEquation::addNewWidget()
     newTab->setModeNew();
     mWidgetEdit.append(newTab);
 
+    QObject::connect(newTab, SIGNAL(destroyed(QObject*)),
+                     this,   SLOT  (onEditDeleted(QObject *)));
     QObject::connect(newTab, SIGNAL(nameChanged(QString)),
                      this,   SLOT  (onNameChange(QString)));
     QObject::connect(newTab, SIGNAL(saveClass()),
@@ -172,8 +169,48 @@ QWidget *ModelerDifferenceEquation::addEditWidget(sourceCpp *src)
             newTab->addParameter(pname, pvalue.toDouble());
         }
     }
+    QObject::connect(newTab, SIGNAL(destroyed(QObject*)),
+                     this,   SLOT  (onEditDeleted(QObject *)));
+    // Set handler for the "Save" button
+    QObject::connect(newTab, SIGNAL(saveClass()),
+                     this,   SLOT  (onSaveClass()));
 
     return newTab;
+}
+
+/**
+ * @brief ModelerDifferenceEquation::getEditClass
+ *        Search and return an opened class widget
+ */
+QWidget *ModelerDifferenceEquation::getEditClass(sourceCpp *src)
+{
+    sourceCppTemplate *tpl = src->getTemplate();
+    QString srcClassName = tpl->getTagValue("class");
+
+    for (int i = 0; i < mWidgetEdit.count(); i++)
+    {
+        EditWidget *ew = mWidgetEdit.at(i);
+        if (ew->getClassName() == srcClassName)
+            return ew;
+    }
+    return 0;
+}
+
+void ModelerDifferenceEquation::closeEditClass(sourceCpp *src)
+{
+    sourceCppTemplate *tpl = src->getTemplate();
+    QString srcClassName = tpl->getTagValue("class");
+
+    for (int i = 0; i < mWidgetEdit.count(); i++)
+    {
+        EditWidget *ew = mWidgetEdit.at(i);
+        if (ew->getClassName() == srcClassName)
+        {
+            mWidgetEdit.removeAt(i);
+            delete ew;
+            break;
+        }
+    }
 }
 
 /**
@@ -216,6 +253,10 @@ void ModelerDifferenceEquation::initExpCond(vpzExpCond *exp, sourceCpp *src)
     }
 }
 
+/**
+ * @brief ModelerDifferenceEquation::onNameChange (slot)
+ *        Called when the name of an opened class has changed
+ */
 void ModelerDifferenceEquation::onNameChange(QString name)
 {
     // Search the caller tab
@@ -231,6 +272,10 @@ void ModelerDifferenceEquation::onNameChange(QString name)
     emit nameChanged(tabWidget, name);
 }
 
+/**
+ * @brief ModelerDifferenceEquation::onSaveClass (slot)
+ *        Called when a class tab request to be saved
+ */
 void ModelerDifferenceEquation::onSaveClass()
 {
     QObject *senderObject = QObject::sender();
