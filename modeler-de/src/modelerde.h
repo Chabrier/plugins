@@ -31,8 +31,8 @@ public:
     QString getData(QString className);
 public:
     bool     useCustomMainTab();
-    QWidget *addNewWidget();
-    QWidget *addEditWidget(sourceCpp *src);
+    QWidget *openNewClass();
+    QWidget *openEditClass(sourceCpp *src);
     QWidget *getEditClass(sourceCpp *src);
     void     closeEditClass(sourceCpp *src);
     QWidget *addEditModel(vleVpzModel *model);

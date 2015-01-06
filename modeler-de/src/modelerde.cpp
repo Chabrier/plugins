@@ -125,10 +125,10 @@ void ModelerDifferenceEquation::onEditDeleted(QObject *obj)
 }
 
 /**
- * @brief ModelerDifferenceEquation::addNewWidget
+ * @brief ModelerDifferenceEquation::openNewClass
  *        Create a new tab to create and configure a new class
  */
-QWidget *ModelerDifferenceEquation::addNewWidget()
+QWidget *ModelerDifferenceEquation::openNewClass()
 {
     EditWidget *newTab = new EditWidget();
     newTab->setModeNew();
@@ -145,10 +145,10 @@ QWidget *ModelerDifferenceEquation::addNewWidget()
 }
 
 /**
- * @brief ModelerDifferenceEquation::addEditWidget
+ * @brief ModelerDifferenceEquation::openEditClass
  *        Create a new tab to edit an existing class
  */
-QWidget *ModelerDifferenceEquation::addEditWidget(sourceCpp *src)
+QWidget *ModelerDifferenceEquation::openEditClass(sourceCpp *src)
 {
     EditWidget *newTab = new EditWidget();
     newTab->setModeEdit();
