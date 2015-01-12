@@ -336,6 +336,23 @@ void ModelerDifferenceEquation::initExpCond(vpzExpCond *exp, sourceCpp *src)
 }
 
 /**
+ * @brief ModelerDifferenceEquation::rename
+ *        Used to change the name of an opened class
+ */
+void ModelerDifferenceEquation::rename(QString oldName, QString newName)
+{
+    for (int i = 0; i < mWidgetEdit.count(); i++)
+    {
+        EditWidget *ew = mWidgetEdit.at(i);
+        if (ew->getClassName() == oldName)
+        {
+            ew->setClassName(newName);
+            break;
+        }
+    }
+}
+
+/**
  * @brief ModelerDifferenceEquation::onNameChange (slot)
  *        Called when the name of an opened class has changed
  */

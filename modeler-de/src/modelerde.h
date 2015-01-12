@@ -37,6 +37,7 @@ public:
     void     closeEditClass(sourceCpp *src);
     QWidget *addEditModel(vleVpzModel *model);
     void     initExpCond(vpzExpCond *exp, sourceCpp *src);
+    void     rename(QString oldName, QString newName);
     void setSettings(QSettings *s);
     void setLogger(Logger *logger);
 
