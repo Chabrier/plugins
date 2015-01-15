@@ -128,10 +128,12 @@ void EditWidget::onAddParameter()
  */
 void EditWidget::onRemoveParameter()
 {
-    QListWidgetItem *item = ui->parametersList->currentItem();
-    if (item == 0)
+    int row = ui->parametersList->currentRow();
+    if (row < 0)
         return;
-    ui->parametersList->removeItemWidget(item);
+    QListWidgetItem *item = ui->parametersList->takeItem(row);
+    if (item)
+        delete item;
 }
 
 /**

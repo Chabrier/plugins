@@ -76,6 +76,8 @@ void EditModel::setModel(vleVpzModel *model)
 
     if (tpl->tagArrayLoad("par"))
     {
+        QStringList usedPortsNames;
+
         int n = tpl->getTagArrayCount();
         ui->tableParameters->setRowCount(n);
 
@@ -86,7 +88,18 @@ void EditModel::setModel(vleVpzModel *model)
 
             vpzExpCondPort  *eport = exp->getPort(pname);
             if (eport == 0)
-                continue;
+            {
+                // Create a new port
+                vpzExpCondPort *newPort = new vpzExpCondPort(exp);
+                newPort->setName(pname);
+                // Insert a double value
+                vpzExpCondValue *v = newPort->createValue(vpzExpCondValue::TypeDouble);
+                v->setDouble( pvalue.toDouble() );
+                // Insert the new port to experimental condition
+                exp->addPort(newPort);
+                eport = newPort;
+            }
+            usedPortsNames.append(pname);
 
             QTableWidgetItem *itemName = new QTableWidgetItem(pname);
             itemName->setFlags(Qt::ItemIsEnabled);
@@ -102,6 +115,16 @@ void EditModel::setModel(vleVpzModel *model)
             QTableWidgetItem *itemValue = new QTableWidgetItem(curVal);
             itemValue->setData(Qt::UserRole, QVariant(curVal));
             ui->tableParameters->setItem(i, 2, itemValue);
+        }
+
+        QList <vpzExpCondPort *> *portList = exp->getPorts();
+        for (int i = 0; i < portList->count(); i++)
+        {
+            vpzExpCondPort *checkPort = portList->at(i);
+            bool known = usedPortsNames.contains( checkPort->getName() );
+            if (known)
+                continue;
+            exp->removePort( checkPort );
         }
     }
     QObject::connect(ui->tableParameters, SIGNAL(itemChanged(QTableWidgetItem *)),
