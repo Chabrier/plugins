@@ -27,6 +27,9 @@ public:
     void setModel(vleVpzModel *model);
     vpzExpCond *getExpCond();
 
+signals:
+    void valueChanged();
+
 public slots:
     void onSaveParameters();
     void onParameterChanged(QTableWidgetItem *item);

@@ -297,12 +297,15 @@ void ModelerDifferenceEquation::closeEditClass(sourceCpp *src)
 
 /**
  * @brief ModelerDifferenceEquation::addEditModel
- *        Create a new tab to edit an existing class
+ *        Create a new tab to edit a model
  */
 QWidget *ModelerDifferenceEquation::addEditModel(vleVpzModel *model)
 {
     EditModel *widget = new EditModel();
     widget->setModel(model);
+
+    QObject::connect(widget, SIGNAL(valueChanged()),
+                     this,   SLOT  (onModelChanged()));
 
     return widget;
 }
@@ -384,6 +387,22 @@ void ModelerDifferenceEquation::onSaveClass()
 
     // Forward this event to main app
     emit saveClass(tabWidget->getClassName());
+}
+
+/**
+ * @brief ModelerDifferenceEquation::onValueChanged (slot)
+ *        Called when a model tab has changed
+ */
+void ModelerDifferenceEquation::onModelChanged()
+{
+    QObject *senderObject = QObject::sender();
+    EditModel *tab = qobject_cast<EditModel *>(senderObject);
+    if (tab == 0)
+        return;
+
+    vpzExpCond *exp = tab->getExpCond();
+
+    emit expCondChanged(exp);
 }
 
 Q_EXPORT_PLUGIN2(modeler_de, ModelerDifferenceEquation)

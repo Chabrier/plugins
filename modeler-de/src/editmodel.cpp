@@ -186,6 +186,9 @@ void EditModel::onSaveParameters()
     }
     // Save button is now disabled until a parameter value change
     ui->buttonParameterSave->setEnabled(false);
+
+    // Inform that parameter value has been changed
+    emit valueChanged();
 }
 
 /* EOF */

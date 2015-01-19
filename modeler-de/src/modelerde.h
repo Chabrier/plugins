@@ -45,9 +45,11 @@ public slots:
     void onNameChange(QString name);
     void onSaveClass();
     void onEditDeleted(QObject *obj);
+    void onModelChanged();
 signals:
     void nameChanged(QWidget *tab, QString name);
     void saveClass(QString name);
+    void expCondChanged(vpzExpCond *exp);
 
 private:
     QString             mName;
