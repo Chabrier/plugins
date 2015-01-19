@@ -99,6 +99,16 @@ void EditModel::setModel(vleVpzModel *model)
                 exp->addPort(newPort);
                 eport = newPort;
             }
+
+            vpzExpCondValue *eval  = eport->getValue();
+            if (eval == 0)
+            {
+                // Insert a double value
+                vpzExpCondValue *v = eport->createValue(vpzExpCondValue::TypeDouble);
+                v->setDouble( pvalue.toDouble() );
+                eval = v;
+            }
+
             usedPortsNames.append(pname);
 
             QTableWidgetItem *itemName = new QTableWidgetItem(pname);
@@ -109,7 +119,6 @@ void EditModel::setModel(vleVpzModel *model)
             itemDefault->setFlags(Qt::ItemIsEnabled);
             ui->tableParameters->setItem(i, 1, itemDefault);
 
-            vpzExpCondValue *eval  = eport->getValue();
             QString curVal;
             curVal.setNum(eval->getDouble());
             QTableWidgetItem *itemValue = new QTableWidgetItem(curVal);
