@@ -18,7 +18,13 @@ MainTab::MainTab(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MainTab)
 {
+    mEcValueDay   = 0;
+    mEcValueMonth = 0;
+    mEcValueYear  = 0;
+
     ui->setupUi(this);
+    QObject::connect(ui->calendar, SIGNAL(clicked(QDate)),
+                     this,         SLOT(dateSelected(QDate)) );
 }
 
 /**
@@ -78,11 +84,20 @@ void MainTab::setExpCond(vpzExpCond *cond)
         QStringList strList = v->getString().split(":");
 
         if ( (strList.count() == 2) && (strList.at(0) == "day") )
+        {
             vDay = strList.at(1).toInt();
+            mEcValueDay = v;
+        }
         if ( (strList.count() == 2) && (strList.at(0) == "month") )
+        {
             vMonth = strList.at(1).toInt();
+            mEcValueMonth = v;
+        }
         if ( (strList.count() == 2) && (strList.at(0) == "year") )
+        {
             vYear = strList.at(1).toInt();
+            mEcValueYear = v;
+        }
     }
     if (vDay < 0)
     {
@@ -91,6 +106,8 @@ void MainTab::setExpCond(vpzExpCond *cond)
         // Set default test value to 8 June 1949 : George Orwell - 1984 ;-)
         ecValue->setString("day:8");
         vDay = 8;
+        // Save a copy of this ExpCondValue
+        mEcValueDay = ecValue;
         qDebug() << "ExpCond-Dummy-Plugin:   Add day value to date port: " << vDay;
     }
     if (vMonth < 0)
@@ -99,6 +116,7 @@ void MainTab::setExpCond(vpzExpCond *cond)
         ecValue = datePort->createValue(vpzExpCondValue::TypeString);
         ecValue->setString("month:6");
         vMonth = 6;
+        mEcValueMonth = ecValue;
         qDebug() << "ExpCond-Dummy-Plugin:   Add month value to date port: " << vMonth;
     }
     if (vYear < 0)
@@ -107,6 +125,7 @@ void MainTab::setExpCond(vpzExpCond *cond)
         ecValue = datePort->createValue(vpzExpCondValue::TypeString);
         ecValue->setString("year:1949");
         vYear = 1949;
+        mEcValueYear = ecValue;
         qDebug() << "ExpCond-Dummy-Plugin:   Add year value to date port: " << vYear;
     }
 
@@ -114,4 +133,25 @@ void MainTab::setExpCond(vpzExpCond *cond)
     selDate.setDate(vYear, vMonth, vDay);
 
     ui->calendar->setSelectedDate(selDate);
+}
+
+/**
+ * @brief MainTab::dateSelected (slot)
+ *        Called when a new date is selected from calendar widget
+ */
+void MainTab::dateSelected(QDate date)
+{
+    // Update the day
+    QString strDay = QString("day:%1").arg(date.day());
+    mEcValueDay->setString(strDay);
+
+    // Update the month
+    QString strMonth = QString("month:%1").arg(date.month());
+    mEcValueMonth->setString(strMonth);
+
+    // Update the year
+    QString strYear = QString("year:%1").arg(date.year());
+    mEcValueYear->setString(strYear);
+
+    emit valueChanged(mExpCond);
 }

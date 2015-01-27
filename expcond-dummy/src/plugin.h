@@ -18,7 +18,7 @@
 #include "tab.h"
 #include "toolbar.h"
 
-class ExpCondDummy : public QObject, public PluginExpCond
+class ExpCondDummy : public PluginExpCond
 {
     Q_OBJECT
     Q_INTERFACES(PluginExpCond)

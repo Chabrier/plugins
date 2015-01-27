@@ -26,9 +26,19 @@ public:
     ~MainTab();
     void setExpCond(vpzExpCond *cond);
 
+signals:
+    void valueChanged(vpzExpCond *cond);
+
+private slots:
+    void dateSelected(QDate date);
+
 private:
     Ui::MainTab *ui;
     vpzExpCond  *mExpCond;
+private:
+    vpzExpCondValue *mEcValueDay;
+    vpzExpCondValue *mEcValueMonth;
+    vpzExpCondValue *mEcValueYear;
 };
 
 #endif // TAB_H
