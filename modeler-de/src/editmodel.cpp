@@ -67,6 +67,7 @@ vpzExpCond *EditModel::getExpCond()
 void EditModel::setModel(vleVpzModel *model)
 {
     mModel = model;
+    bool isAltered = false;
 
     vpzExpCond *exp = getExpCond();
     if ((exp == 0) || (mSource == 0))
@@ -98,6 +99,7 @@ void EditModel::setModel(vleVpzModel *model)
                 // Insert the new port to experimental condition
                 exp->addPort(newPort);
                 eport = newPort;
+                isAltered = true;
             }
 
             vpzExpCondValue *eval  = eport->getValue();
@@ -134,10 +136,15 @@ void EditModel::setModel(vleVpzModel *model)
             if (known)
                 continue;
             exp->removePort( checkPort );
+            isAltered = true;
         }
     }
     QObject::connect(ui->tableParameters, SIGNAL(itemChanged(QTableWidgetItem *)),
                      this,    SLOT(onParameterChanged(QTableWidgetItem *)));
+
+    if (isAltered)
+        // Inform that parameter value has been changed
+        emit valueChanged();
 }
 
 /**

@@ -302,10 +302,11 @@ void ModelerDifferenceEquation::closeEditClass(sourceCpp *src)
 QWidget *ModelerDifferenceEquation::addEditModel(vleVpzModel *model)
 {
     EditModel *widget = new EditModel();
-    widget->setModel(model);
 
     QObject::connect(widget, SIGNAL(valueChanged()),
                      this,   SLOT  (onModelChanged()));
+
+    widget->setModel(model);
 
     return widget;
 }
