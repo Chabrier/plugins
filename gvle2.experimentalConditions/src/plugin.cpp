@@ -38,7 +38,7 @@ ExpCondDummy::~ExpCondDummy() {
  *        Return the plugin name
  */
 QString ExpCondDummy::getname() {
-    QString name = "Dummy";
+    QString name = "Date";
     return name;
 }
 

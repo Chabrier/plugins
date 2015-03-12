@@ -1,9 +1,6 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
-#include(${QT_USE_FILE})
-#include_directories(${XMLDEPS_INCLUDE_DIRS})
-
 find_package(Qt4 REQUIRED)
 include(${QT_USE_FILE})
 find_package(PkgConfig REQUIRED)
@@ -27,34 +24,21 @@ else (VLE_VERSION)
   set(V_LIB "vle-1.1")
 endif (VLE_VERSION)
 
-include_directories(${Boost_INCLUDE_DIRS})
-link_directories(${Boost_LIBRARY_DIRS})
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
+LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 SET(dummy_SOURCES plugin.cpp toolbar.cpp tab.cpp)
 
 QT4_WRAP_UI(ui_toolbar_h  toolbar.ui)
 QT4_WRAP_UI(ui_tab_h      tab.ui)
 
-add_library(expcond_dummy SHARED ${dummy_SOURCES}
-  ${ui_toolbar_h} ${ui_tab_h} )
+ADD_LIBRARY(ExperimentalConditions SHARED
+  plugin.cpp toolbar.cpp tab.cpp
+  ${ui_toolbar_h}
+  ${ui_tab_h} )
 
-target_link_libraries(expcond_dummy ${QT_LIBRARIES} ${INTL_LIB})
+TARGET_LINK_LIBRARIES(ExperimentalConditions
+  ${QT_LIBRARIES} ${INTL_LIB})
 
-##
-## install
-##
-
-file(TO_CMAKE_PATH "$ENV{VLE_HOME}" _vle_home)
-
-if (NOT _vle_home)
-  if (CMAKE_HOST_WIN32)
-    file(TO_CMAKE_PATH "$ENV{HOMEDRIVE}$ENV{HOMEPATH}/vle" _vle_home)
-  else ()
-    file(TO_CMAKE_PATH "$ENV{HOME}/.vle" _vle_home)
-  endif ()
-  message(STATUS "The VLE_HOME undefined, try default ${_vle_home}")
-else ()
-  message(STATUS "The VLE_HOME defined: ${_vle_home}")
-endif ()
-
-install(TARGETS expcond_dummy DESTINATION "${_vle_home}/plugins")
+INSTALL(TARGETS ExperimentalConditions RUNTIME DESTINATION
+  plugins/gvle2/condition LIBRARY DESTINATION plugins/gvle2/condition)
