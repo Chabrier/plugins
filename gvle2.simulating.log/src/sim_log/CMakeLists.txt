@@ -24,21 +24,19 @@ else (VLE_VERSION)
   set(V_LIB "vle-1.1")
 endif (VLE_VERSION)
 
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
-LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
+include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
 
-SET(ExpCond_SOURCES plugin.cpp toolbar.cpp tab.cpp)
+SET(LOG_SOURCES sim_log.cpp simtab.cpp thread.cpp
+  widtoolbar.cpp)
 
-QT4_WRAP_UI(ui_toolbar_h  toolbar.ui)
-QT4_WRAP_UI(ui_tab_h      tab.ui)
+QT4_WRAP_UI(ui_simtab_h simtab.ui)
+QT4_WRAP_UI(ui_widtoolbar_h widtoolbar.ui)
 
-ADD_LIBRARY(ExperimentalConditions SHARED
-  ${ExpCond_SOURCES}
-  ${ui_toolbar_h}
-  ${ui_tab_h} )
+add_library(sim_log SHARED ${LOG_SOURCES}
+  ${ui_simtab_h} ${ui_widtoolbar_h} )
 
-TARGET_LINK_LIBRARIES(ExperimentalConditions
-  ${QT_LIBRARIES} ${INTL_LIB})
+target_link_libraries(sim_log qwt ${QT_LIBRARIES} ${INTL_LIB})
 
-INSTALL(TARGETS ExperimentalConditions RUNTIME DESTINATION
-  plugins/gvle2/condition LIBRARY DESTINATION plugins/gvle2/condition)
+INSTALL(TARGETS sim_log RUNTIME DESTINATION
+  plugins/gvle2/simulating LIBRARY DESTINATION plugins/gvle2/simulating)

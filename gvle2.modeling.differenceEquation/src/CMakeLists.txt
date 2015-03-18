@@ -24,21 +24,19 @@ else (VLE_VERSION)
   set(V_LIB "vle-1.1")
 endif (VLE_VERSION)
 
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
-LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
+include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
 
-SET(ExpCond_SOURCES plugin.cpp toolbar.cpp tab.cpp)
+SET(difference-equation_SOURCES modelerde.cpp editwidget.cpp
+    editmodel.cpp)
 
-QT4_WRAP_UI(ui_toolbar_h  toolbar.ui)
-QT4_WRAP_UI(ui_tab_h      tab.ui)
+QT4_WRAP_UI(ui_editclass_h editclass.ui)
+QT4_WRAP_UI(ui_editmodel_h editmodel.ui)
 
-ADD_LIBRARY(ExperimentalConditions SHARED
-  ${ExpCond_SOURCES}
-  ${ui_toolbar_h}
-  ${ui_tab_h} )
+add_library(modeler-difference-equation SHARED ${difference-equation_SOURCES}
+  ${ui_editclass_h} ${ui_editmodel_h} )
 
-TARGET_LINK_LIBRARIES(ExperimentalConditions
-  ${QT_LIBRARIES} ${INTL_LIB})
+target_link_libraries(modeler-difference-equation ${QT_LIBRARIES} ${INTL_LIB})
 
-INSTALL(TARGETS ExperimentalConditions RUNTIME DESTINATION
-  plugins/gvle2/condition LIBRARY DESTINATION plugins/gvle2/condition)
+INSTALL(TARGETS modeler-difference-equation RUNTIME DESTINATION
+  plugins/gvle2/modeling LIBRARY DESTINATION plugins/gvle2/modeling)

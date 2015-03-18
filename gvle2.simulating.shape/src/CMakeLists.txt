@@ -24,21 +24,20 @@ else (VLE_VERSION)
   set(V_LIB "vle-1.1")
 endif (VLE_VERSION)
 
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
-LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
+include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
 
-SET(ExpCond_SOURCES plugin.cpp toolbar.cpp tab.cpp)
+SET(shape_SOURCES sim_spacial.cpp simtab.cpp widtoolbar.cpp
+    openglwidget.cpp shaderwidget.cpp
+    shapefile.cpp shapeobject.cpp )
 
-QT4_WRAP_UI(ui_toolbar_h  toolbar.ui)
-QT4_WRAP_UI(ui_tab_h      tab.ui)
+QT4_WRAP_UI(ui_simtab_h simtab.ui)
+QT4_WRAP_UI(ui_widtoolbar_h widtoolbar.ui)
 
-ADD_LIBRARY(ExperimentalConditions SHARED
-  ${ExpCond_SOURCES}
-  ${ui_toolbar_h}
-  ${ui_tab_h} )
+add_library(gvle2shape SHARED ${shape_SOURCES}
+  ${ui_simtab_h} ${ui_widtoolbar_h} openglwidget.h shapefile.h shapeobject.h )
 
-TARGET_LINK_LIBRARIES(ExperimentalConditions
-  ${QT_LIBRARIES} ${INTL_LIB})
+target_link_libraries(gvle2shape shp GLEW GL ${QT_LIBRARIES} ${INTL_LIB})
 
-INSTALL(TARGETS ExperimentalConditions RUNTIME DESTINATION
-  plugins/gvle2/condition LIBRARY DESTINATION plugins/gvle2/condition)
+INSTALL(TARGETS gvle2shape RUNTIME DESTINATION
+  plugins/gvle2/simulating LIBRARY DESTINATION plugins/gvle2/simulating)
