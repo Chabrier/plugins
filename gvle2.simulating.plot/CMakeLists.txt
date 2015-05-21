@@ -51,6 +51,7 @@ INCLUDE(CMakeDetermineCCompiler)
 
 set(VLE_DEBUG 0)
 find_package(VLE REQUIRED)
+find_package(GVLE2 REQUIRED)
 
 ##
 ## Check VLE's packages

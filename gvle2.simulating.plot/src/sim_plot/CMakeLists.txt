@@ -46,6 +46,9 @@ add_library(sim_plot SHARED
   ${ui_simtab_h}
   ${ui_widtoolbar_h} )
 
+message("alors???:${GVLE2_LIBRARIES}")
+
+
 target_link_libraries(sim_plot
   qwt
   ${QT_LIBRARIES}
