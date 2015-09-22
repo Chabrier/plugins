@@ -194,47 +194,49 @@ void *SimSpacial::getVpz()
 
 QString SimSpacial::getShapeName(vleVpz *vpz)
 {
-    vpzExpCondPort  *port = 0;
-    vpzExpCondValue *value = 0;
+    std::vector<vle::value::Value*> values;
+    QDomNodeList condList = vpz->condsListFromConds(vpz->condsFromDoc());
+    vle::value::Value* val = 0;
 
     if (mShapeKeyName == "")
         throw -1;
 
     // Search into all Experimental Conditions
-    QList <vpzExpCond *> *cList = vpz->getConditions();
-    for (int i = 0; i < cList->length(); i++)
-    {
+    for (unsigned int i = 0; i < condList.length(); i++) {
+        QDomNode cond = condList.item(i);
+        QString name = vpz->attributeValue(cond, "name");
+        QDomNodeList portList = vpz->portsListFromDoc(name);
+
         // Get the list of ports for this condition
-        QList <vpzExpCondPort *> *portsList = cList->at(i)->getPorts();
-        for (int j = 0; j < portsList->length(); j++)
-        {
+        for (unsigned int j = 0; j < portList.length(); j++) {
+            QDomNode port = portList.at(j);
             // If the port has the name specified by config ...
-            if (portsList->at(j)->getName() == mShapeKeyName)
+            if (vpz->attributeValue(port, "name") == mShapeKeyName)
             {
-                // ... then use it
-                port = portsList->at(j);
+                vpz->fillWithMultipleValue(port, values);
                 break;
             }
         }
-        if (port)
+        if (not values.empty())
             break;
     }
-    if (port == 0)
+    if (values.empty())
         throw -2;
 
     // Search a string into the port values
-    QList <vpzExpCondValue *> *values = port->getValues();
-    for (int i = 0; i < values->length(); i++)
-    {
-        if (values->at(i)->type() != vpzExpCondValue::TypeString)
+    for (unsigned int i = 0; i < values.size(); i++) {
+        vle::value::Value* vall = values[i];
+
+        if (not vall->getType() == vle::value::Value::STRING)
             continue;
-        value = values->at(i);
+        val = vall;
         break;
     }
-    if (value == 0)
+    if (val == 0) {
         throw -3;
+    }
 
-    return value->getString();
+    return val->toString().value().c_str();
 }
 
 Q_EXPORT_PLUGIN2(sim_spacial, SimSpacial)
