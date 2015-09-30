@@ -6,6 +6,7 @@
  * Copyright (c) 2014 INRA
  *
  */
+#include <QFileDialog>
 #include <QDebug>
 #include "simtab.h"
 #include "ui_simtab.h"
@@ -32,9 +33,14 @@ SimTab::SimTab(QWidget *parent) :
 
     mUiTool = 0;
     ui->setupUi(this);
-    QObject::connect(ui->butStart, SIGNAL(clicked()), this, SLOT(onButtonStart()));
+    QObject::connect(ui->butStart, SIGNAL(clicked()),
+                     this, SLOT(onButtonStart()));
 
-    QObject::connect(ui->resultsSlider, SIGNAL(valueChanged(int)),this, SLOT(onSliderValue(int)));
+    QObject::connect(ui->resultsSlider, SIGNAL(valueChanged(int)),
+                     this, SLOT(onSliderValue(int)));
+
+     QObject::connect(ui->buttonSave, SIGNAL(clicked()),
+                      this,           SLOT(onButtonSave()));
 }
 
 SimTab::~SimTab()
@@ -162,13 +168,33 @@ void SimTab::onButtonStart()
     mThread->start();
 }
 
+/**
+ * @brief simulationView::onButtonSave
+ *        Called when a click event occur on 'Save' button
+ *
+ */
+void SimTab::onButtonSave()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save as"), tr("Choose a filename"), "PNG(*.png)");
+
+    if (fileName != "")
+    {
+        try {
+            QPixmap img = QPixmap::grabWidget(ui->glview);
+
+            if(!img.save(fileName, qPrintable("PNG")))
+                throw(2);
+        } catch (...) {
+            qDebug() << tr("Error: Save plot to image file failed");
+        }
+    }
+}
+
 void SimTab::onSliderValue(int val)
 {
-    // If value is out of range, ignore it
     if ((val + 1) > mSimResults.length())
         return;
 
-    qDebug() << "Spacial ==== Show value at sample n° " << val;
     mUiTool->setProperty(3, QString("%1 / %2").arg(val).arg(mSimResults.length()));
 
     SimValue *v = mSimResults.at(val-1);
@@ -180,7 +206,6 @@ void SimTab::onSliderValue(int val)
         // Translate the value to range [0.0 : 1.0]
         double fullScale = mScaleMax - mScaleMin;
         double vRatio = (1 / fullScale) * (vD - mScaleMin);
-        qDebug() << "  - Poly " << i << " v=" << vD << " ratio=" << vRatio;
         // Get the color for this value into current palette
         QColor c = ui->widShader->getColor(vRatio);
         // Update the shape color
@@ -232,8 +257,6 @@ void SimTab::simulationFinished()
 
             vle::value::Matrix* mat;
             mat = mSimThread->getMatrix(itb->second);
-            qDebug() << "  - Colums count  " << mat->columns();
-            qDebug() << "  - Results count " << mat->rows();
             if (mat->rows() == 0)
             {
                 delete mat;

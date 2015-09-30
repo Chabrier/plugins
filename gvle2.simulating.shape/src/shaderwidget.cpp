@@ -23,6 +23,7 @@ shaderWidget::shaderWidget(QWidget *parent) :
 
 #ifdef DEFAULT_PALETTE
     // Add a basic greyscale palette
+
     addPalette("Greyscale/0.0=0:0:0|1.0=255:255:255");
 #endif
 }
@@ -254,12 +255,9 @@ QColor shaderWidget::getColor(double at)
     // Compute the ratio into the interval
     double ratio = (at - dStart) / len;
 
-    qDebug() << "requested value " << at << " into palette " << mCurrentPalette->getName() << " Value is between " << dStart << " and " << dEnd;
-
     int red   = (int)(cStart.red()  * (1-ratio) + cEnd.red()  * ratio);
     int green = (int)(cStart.green()* (1-ratio) + cEnd.green()* ratio);
     int blue  = (int)(cStart.blue() * (1-ratio) + cEnd.blue() * ratio);
-    qDebug() << "Interval len=" << len << " ratio="<<ratio <<" -> Color red="<<red << " green="<< green << " blue="<<blue;
 
     return QColor(red, green, blue);
 }

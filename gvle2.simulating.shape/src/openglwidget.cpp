@@ -162,8 +162,6 @@ void OpenGLWidget::buildObject(cObjectDef *obj)
 {
     int count = obj->shape->GetVertexCount();
 
-    qDebug() << "OpenGLWidget::buildObject() Vertex count=" << count;
-
     obj->vertices = new vertex_t [count];
 
     vertex_t *vptr = obj->vertices;

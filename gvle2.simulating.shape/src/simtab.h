@@ -36,7 +36,7 @@ public:
 class SimTab : public QWidget
 {
     Q_OBJECT
-    
+
 public:
     explicit SimTab(QWidget *parent = 0);
     ~SimTab();
@@ -77,6 +77,7 @@ private slots:
     void onButtonStart();
     void onSliderValue(int val);
     void onPaletteSelected(int n);
+    void onButtonSave();
 };
 
 #endif // SIMTAB_H

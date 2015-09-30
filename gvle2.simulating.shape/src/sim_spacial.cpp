@@ -170,10 +170,6 @@ void SimSpacial::setVpz(vleVpz *vpz)
                        .arg(pkgName)
                        .arg(shapeName);
 
-    qDebug() << "SimSpacial::setVpz() << " << vpz->getFilename();
-    qDebug() << "  - Package name : " << pkgName;
-    qDebug() << "  - Shape file   : " << shapeName;
-
     try {
         mShapeFile.open(mShapeFilename);
 
