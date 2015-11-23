@@ -13,6 +13,9 @@
 #include "sim_spacial.h"
 #include "simtab.h"
 
+namespace vle {
+namespace gvle2 {
+
 /**
  * @brief SimSpacial::SimSpacial
  *        Default constructor of the plugin main object
@@ -156,14 +159,21 @@ void SimSpacial::delWidgetToolbar()
 }
 
 /**
- * @brief SimSpacial::setVpz
- *        Set the VPZ package used for the simulation
+ * @brief SimSpacial::init
  */
-void SimSpacial::setVpz(vleVpz *vpz)
+void SimSpacial::init(vleVpm *vpm)
 {
-    QString pkgName = vpz->getFilename().split("/").at(0);
+    mVpm = vpm;
 
-    QString shapeName = getShapeName(vpz);
+    QString fileName =  vpm->getFilename();
+
+    QString currentDir = QDir::currentPath() += "/";
+
+    fileName.replace(currentDir, "");
+
+    QString pkgName = fileName.split("/").at(0);
+
+    QString shapeName = getShapeName(vpm);
 
     mShapeFilename = QString("%1/%2/data/%3")
                        .arg(QDir::currentPath())
@@ -176,22 +186,23 @@ void SimSpacial::setVpz(vleVpz *vpz)
         if ( ! getWidget())
             throw -3;
 
-        mWidgetTab->setVpz(vpz);
+        mWidgetTab->setVpm(vpm);
         mWidgetTab->setFile(&mShapeFile);
     } catch(...) {
-        qDebug() << "Shape init failed !";
+        qDebug() << "Shape init failed !" << fileName << " " << pkgName << "  " << shapeName << " " << mShapeFilename << " " ;
+//<< *mCurrPackage->getDataDir().c_str();
     }
 }
 
-void *SimSpacial::getVpz()
+void *SimSpacial::getVpm()
 {
-    return (void *)0;
+    return (void *)mVpm;
 }
 
-QString SimSpacial::getShapeName(vleVpz *vpz)
+QString SimSpacial::getShapeName(vleVpm *vpm)
 {
     std::vector<vle::value::Value*> values;
-    QDomNodeList condList = vpz->condsListFromConds(vpz->condsFromDoc());
+    QDomNodeList condList = vpm->condsListFromConds(vpm->condsFromDoc());
     vle::value::Value* val = 0;
 
     if (mShapeKeyName == "")
@@ -200,16 +211,16 @@ QString SimSpacial::getShapeName(vleVpz *vpz)
     // Search into all Experimental Conditions
     for (unsigned int i = 0; i < condList.length(); i++) {
         QDomNode cond = condList.item(i);
-        QString name = vpz->attributeValue(cond, "name");
-        QDomNodeList portList = vpz->portsListFromDoc(name);
+        QString name = mVpm->vdo()->attributeValue(cond, "name");
+        QDomNodeList portList = vpm->portsListFromDoc(name);
 
         // Get the list of ports for this condition
         for (unsigned int j = 0; j < portList.length(); j++) {
             QDomNode port = portList.at(j);
             // If the port has the name specified by config ...
-            if (vpz->attributeValue(port, "name") == mShapeKeyName)
+            if (mVpm->vdo()->attributeValue(port, "name") == mShapeKeyName)
             {
-                vpz->fillWithMultipleValue(port, values);
+                vpm->fillWithMultipleValue(port, values);
                 break;
             }
         }
@@ -235,4 +246,6 @@ QString SimSpacial::getShapeName(vleVpz *vpz)
     return val->toString().value().c_str();
 }
 
-Q_EXPORT_PLUGIN2(sim_spacial, SimSpacial)
+}} //namespaces
+
+Q_EXPORT_PLUGIN2(sim_spacial, vle::gvle2::SimSpacial)

@@ -12,7 +12,7 @@
 #include <QComboBox>
 #include <QObject>
 #include <QWidget>
-#include <vle/gvle2/vlevpz.h>
+#include <vle/gvle2/vlevpm.h>
 #ifndef Q_MOC_RUN
 #include <vle/vpz/Vpz.hpp>
 #endif
@@ -24,6 +24,9 @@ class widToolbar;
 #define ROW_VIEW    0
 #define ROW_PALETTE 1
 
+namespace vle {
+namespace gvle2 {
+
 class widToolbar : public QWidget
 {
     Q_OBJECT
@@ -33,7 +36,7 @@ public:
     ~widToolbar();
     void setProperty(int id, QString v);
     void addPalette(QString name);
-    void buildViewsList(vleVpz *vpz);
+    void buildViewsList(vleVpm *vpm);
     QString getSelectedView();
 
 private:
@@ -45,5 +48,7 @@ signals:
 private slots:
     void onPaletteSelected(int);
 };
+
+}}
 
 #endif // WIDTOOLBAR_H

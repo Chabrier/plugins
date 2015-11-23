@@ -17,13 +17,16 @@
 #include "vle/vpz/BaseModel.hpp"
 #include "vle/vpz/AtomicModel.hpp"
 
+namespace vle {
+namespace gvle2 {
+
 SimTab::SimTab(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::SimTab)
 {
     mSettings = 0;
 
-    mVpz = 0;
+    mVpm = 0;
     mOutputs = 0;
 
     mShapeFile = 0;
@@ -66,8 +69,8 @@ void SimTab::setToolbar(widToolbar *w)
     connect(mUiTool, SIGNAL(paletteSelected(int)),
             this,    SLOT  (onPaletteSelected(int)));
 
-    if (mVpz)
-        mUiTool->buildViewsList(mVpz);
+    if (mVpm)
+        mUiTool->buildViewsList(mVpm);
 }
 
 /**
@@ -102,12 +105,12 @@ void SimTab::setSettings(QSettings *s)
     }
 }
 
-void SimTab::setVpz(vleVpz *vpz)
+void SimTab::setVpm(vleVpm *vpm)
 {
-    mVpz = vpz;
+    mVpm = vpm;
 
     if (mUiTool)
-        mUiTool->buildViewsList(mVpz);
+        mUiTool->buildViewsList(mVpm);
 }
 void SimTab::setPackage(vle::utils::Package *pkg)
 {
@@ -143,7 +146,7 @@ void SimTab::paintEvent(QPaintEvent *event)
 
 void SimTab::onButtonStart()
 {
-    mSimThread = new simulationThread(mVpz);
+    mSimThread = new simulationThread(mVpm);
     try {
         mCurrPackage->addDirectory("","output",vle::utils::PKG_SOURCE);
         std::string path = mCurrPackage->getOutputDir(vle::utils::PKG_SOURCE);
@@ -329,3 +332,5 @@ void SimTab::clearResults()
 
     mScaleValid = false;
 }
+
+}}

@@ -28,7 +28,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 
 SET(difference-equation_SOURCES modelerde.cpp editwidget.cpp
-    editmodel.cpp)
+    editmodel.cpp vlesm.cpp)
 
 QT4_WRAP_UI(ui_editclass_h editclass.ui)
 QT4_WRAP_UI(ui_editmodel_h editmodel.ui)

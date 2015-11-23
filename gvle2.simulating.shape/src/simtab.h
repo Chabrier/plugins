@@ -27,6 +27,9 @@ namespace Ui {
 class SimTab;
 }
 
+namespace vle {
+namespace gvle2 {
+
 class SimValue
 {
 public:
@@ -42,7 +45,7 @@ public:
     ~SimTab();
     void setToolbar(widToolbar *w);
     void setSettings(QSettings *s);
-    void setVpz(vleVpz *vpz);
+    void setVpm(vleVpm *vpm);
     void setPackage(vle::utils::Package *pkg);
     void setFile(ShapeFile *f);
     void setShape();
@@ -55,7 +58,7 @@ private:
     Ui::SimTab *ui;
     widToolbar *mUiTool;
     QSettings  *mSettings;
-    vleVpz     *mVpz;
+    vleVpm     *mVpm;
     ShapeFile  *mShapeFile;
     bool        mIsShape;
 
@@ -79,5 +82,7 @@ private slots:
     void onPaletteSelected(int n);
     void onButtonSave();
 };
+
+}}
 
 #endif // SIMTAB_H

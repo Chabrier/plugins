@@ -16,10 +16,13 @@ namespace Ui {
 class TabWidget;
 }
 
+namespace vle {
+namespace gvle2 {
+
 class TabWidget : public QWidget
 {
     Q_OBJECT
-    
+
 public:
     explicit TabWidget(QWidget *parent = 0);
     ~TabWidget();
@@ -27,5 +30,5 @@ public:
 private:
     Ui::TabWidget *ui;
 };
-
+}}
 #endif // TABWIDGET_H

@@ -9,7 +9,7 @@
 #include <QObject>
 #include <QtPlugin>
 #include "modelerde.h"
-#include "modelerde.h"
+#include "vlesm.h"
 #include <iostream>
 #include <sstream>
 #include <vle/gvle2/sourcecpp.h>
@@ -17,7 +17,11 @@
 #include <vle/utils/Template.hpp>
 #include <vle/utils/Tools.hpp>
 
+namespace vle {
+namespace gvle2 {
+
 ModelerDifferenceEquation::ModelerDifferenceEquation() {
+    mPkg       = 0;
     mLogger    = 0;
     mSettings  = 0;
     mWidgetEdit.clear();
@@ -25,7 +29,6 @@ ModelerDifferenceEquation::ModelerDifferenceEquation() {
 }
 
 ModelerDifferenceEquation::~ModelerDifferenceEquation() {
-    // Nothing to do ...
 }
 
 /**
@@ -39,17 +42,29 @@ QString ModelerDifferenceEquation::getname()
 
 QString ModelerDifferenceEquation::getData(QString className)
 {
+    qDebug() << "ModelerDifferenceEquation::getData " << className;
+
+
     EditWidget *w;
+    vleSm *sm;
+
     for (int i = 0; i < mWidgetEdit.count(); i++)
     {
         w = mWidgetEdit.at(i);
-        if (w->getClassName() == className)
+        if (w->getClassName() == className) {
+            sm = w->getSm();
             break;
+        }
         w = 0;
     }
     if (w == 0)
         return QString();
 
+    return getData(sm);
+}
+
+QString ModelerDifferenceEquation::getData(vleSm * sm)
+{
     QString tpl = "/**\n"                                               \
         "  * @file {{classname}}.cpp\n"                                 \
         "  * @author ...\n"                                             \
@@ -134,16 +149,18 @@ QString ModelerDifferenceEquation::getData(QString className)
 
 
     vle::utils::Template vleTpl(tpl.toStdString());
-    vleTpl.stringSymbol().append("classname", className.toStdString());
-    vleTpl.stringSymbol().append("namespace", "namespace_debug");
+    vleTpl.stringSymbol().append("classname", sm->getClassName().toStdString());
+    vleTpl.stringSymbol().append("namespace", sm->getNamespace().toStdString());
 
     vleTpl.listSymbol().append("par");
     vleTpl.listSymbol().append("val");
-    for(int i = 0; i < w->getParameterCount(); i++)
-    {
-        double      value = w->getParameterValue(i);
-        std::string paramName  = w->getParameterName(i).toStdString();
-        std::string paramValue = vle::utils::toScientificString(value, false);
+
+    QDomNodeList paramsXml = sm->paramsFromDoc();
+    for (unsigned int i = 0; i < paramsXml.length(); i++) {
+        QDomNode param = paramsXml.item(i);
+        std::string paramName = param.attributes().namedItem("param").nodeValue().toStdString();
+        std::string paramValue = param.attributes().namedItem("value").nodeValue().toStdString();
+
         vleTpl.listSymbol().append("par", paramName);
         vleTpl.listSymbol().append("val", paramValue);
     }
@@ -188,6 +205,11 @@ void ModelerDifferenceEquation::setLogger(Logger *logger)
     mLogger = logger;
 }
 
+void ModelerDifferenceEquation::setPackage(vle::utils::Package *pkg)
+{
+    mPkg = pkg;
+}
+
 bool ModelerDifferenceEquation::useCustomMainTab()
 {
     return false;
@@ -214,6 +236,8 @@ QWidget *ModelerDifferenceEquation::openNewClass()
 {
     EditWidget *newTab = new EditWidget();
     newTab->setModeNew();
+    newTab->setPackage(mPkg);
+
     mWidgetEdit.append(newTab);
 
     QObject::connect(newTab, SIGNAL(destroyed(QObject*)),
@@ -222,6 +246,8 @@ QWidget *ModelerDifferenceEquation::openNewClass()
                      this,   SLOT  (onNameChange(QString)));
     QObject::connect(newTab, SIGNAL(saveClass()),
                      this,   SLOT  (onSaveClass()));
+    QObject::connect(newTab, SIGNAL(newClass(QString)),
+                     this,   SLOT  (onNewClass(QString)));
 
     return newTab;
 }
@@ -232,30 +258,44 @@ QWidget *ModelerDifferenceEquation::openNewClass()
  */
 QWidget *ModelerDifferenceEquation::openEditClass(sourceCpp *src)
 {
+    qDebug() << "ModelerDifferenceEquation::openEditClass";
+
     EditWidget *newTab = new EditWidget();
-    newTab->setModeEdit();
+
+    newTab->setPackage(mPkg);
     mWidgetEdit.append(newTab);
 
-    sourceCppTemplate *tpl = src->getTemplate();
+    sourceCppTemplate *tpl = 0;
+    tpl = src->getTemplate();
+    qDebug() << tpl;
 
     // Search the class name from tag
-    newTab->setClassName( tpl->getTagValue("class") );
+    newTab->setClassName(tpl->getTagValue("class"));
+    newTab->setParameters();
+    newTab->setCompute();
 
-    if (tpl->tagArrayLoad("par"))
-    {
-        int n = tpl->getTagArrayCount();
-        for (int i = 0; i < n; i++)
-        {
-            QString pname  = tpl->getTagArrayName(i);
-            QString pvalue = tpl->getTagArrayValue(i);
-            newTab->addParameter(pname, pvalue.toDouble());
-        }
-    }
+    newTab->setModeEdit2();
+
+    qDebug() << "the name " << tpl->getTagValue("class");
+
+
+    // if (tpl->tagArrayLoad("par"))
+    // {
+    //     int n = tpl->getTagArrayCount();
+    //     for (int i = 0; i < n; i++)
+    //     {
+    //         QString pname  = tpl->getTagArrayName(i);
+    //         QString pvalue = tpl->getTagArrayValue(i);
+    //         newTab->addParameter(pname, pvalue.toDouble());
+    //     }
+    // }
     QObject::connect(newTab, SIGNAL(destroyed(QObject*)),
                      this,   SLOT  (onEditDeleted(QObject *)));
     // Set handler for the "Save" button
     QObject::connect(newTab, SIGNAL(saveClass()),
                      this,   SLOT  (onSaveClass()));
+    QObject::connect(newTab, SIGNAL(nameChanged(QString)),
+                     this,   SLOT  (onNameChange(QString)));
 
     return newTab;
 }
@@ -299,45 +339,45 @@ void ModelerDifferenceEquation::closeEditClass(sourceCpp *src)
  * @brief ModelerDifferenceEquation::addEditModel
  *        Create a new tab to edit a model
  */
-QWidget *ModelerDifferenceEquation::addEditModel(vleVpzModel *model)
-{
-    EditModel *widget = new EditModel();
+// QWidget *ModelerDifferenceEquation::addEditModel(vleVpzModel *model)
+// {
+//     EditModel *widget = new EditModel();
 
-    QObject::connect(widget, SIGNAL(valueChanged()),
-                     this,   SLOT  (onModelChanged()));
+//     QObject::connect(widget, SIGNAL(valueChanged()),
+//                      this,   SLOT  (onModelChanged()));
 
-    widget->setModel(model);
+//     widget->setModel(model);
 
-    return widget;
-}
+//     return widget;
+// }
 
 /**
  * @brief ModelerDifferenceEquation::initExpCond
  *        Init an exprimental condition according to template parameters
  */
-void ModelerDifferenceEquation::initExpCond(vpzExpCond *exp, sourceCpp *src)
-{
-    sourceCppTemplate *tpl = src->getTemplate();
+// void ModelerDifferenceEquation::initExpCond(vpzExpCond *exp, sourceCpp *src)
+// {
+//     sourceCppTemplate *tpl = src->getTemplate();
 
-    if (tpl->tagArrayLoad("par"))
-    {
-        int n = tpl->getTagArrayCount();
-        for (int i = 0; i < n; i++)
-        {
-            QString pname  = tpl->getTagArrayName(i);
-            QString pvalue = tpl->getTagArrayValue(i);
+//     if (tpl->tagArrayLoad("par"))
+//     {
+//         int n = tpl->getTagArrayCount();
+//         for (int i = 0; i < n; i++)
+//         {
+//             QString pname  = tpl->getTagArrayName(i);
+//             QString pvalue = tpl->getTagArrayValue(i);
 
-            // Create a new port for this parameter
-            vpzExpCondPort  *port = new vpzExpCondPort(exp);
-            port->setName(pname);
-            // Insert a double value to the port
-            vpzExpCondValue *v = port->createValue(vpzExpCondValue::TypeDouble);
-            v->setDouble( pvalue.toDouble() );
-            // Then, insert the new port to experimental condition
-            exp->addPort(port);
-        }
-    }
-}
+//             // Create a new port for this parameter
+//             vpzExpCondPort  *port = new vpzExpCondPort(exp);
+//             port->setName(pname);
+//             // Insert a double value to the port
+//             vpzExpCondValue *v = port->createValue(vpzExpCondValue::TypeDouble);
+//             v->setDouble( pvalue.toDouble() );
+//             // Then, insert the new port to experimental condition
+//             exp->addPort(port);
+//         }
+//     }
+// }
 
 /**
  * @brief ModelerDifferenceEquation::rename
@@ -368,9 +408,6 @@ void ModelerDifferenceEquation::onNameChange(QString name)
     if (tabWidget == 0)
         return;
 
-    tabWidget->setClassName(name);
-    tabWidget->setModeEdit();
-
     // Forward this event to main app
     emit nameChanged(tabWidget, name);
 }
@@ -381,13 +418,22 @@ void ModelerDifferenceEquation::onNameChange(QString name)
  */
 void ModelerDifferenceEquation::onSaveClass()
 {
+    qDebug() << "ModelerDifferenceEquation::onSaveClass" ;
+
     QObject *senderObject = QObject::sender();
     EditWidget *tabWidget = qobject_cast<EditWidget *>(senderObject);
     if (tabWidget == 0)
         return;
 
-    // Forward this event to main app
-    emit saveClass(tabWidget->getClassName());
+    QString fileName = tabWidget->getSm()->getSrcPath();
+
+    vleSm* sm = tabWidget->getSm();
+
+    QFile file(sm->getSrcPath());
+    file.open(QIODevice::WriteOnly);
+    QTextStream stream(&file);
+    stream << getData(sm->getClassName());
+    file.close();
 }
 
 /**
@@ -401,9 +447,33 @@ void ModelerDifferenceEquation::onModelChanged()
     if (tab == 0)
         return;
 
-    vpzExpCond *exp = tab->getExpCond();
+//    vpzExpCond *exp = tab->getExpCond();
 
-    emit expCondChanged(exp);
+//    emit expCondChanged(exp);
 }
 
-Q_EXPORT_PLUGIN2(modeler_de, ModelerDifferenceEquation)
+void ModelerDifferenceEquation::cloneSrc(const QString from, const QString to)
+{
+    qDebug() << "ModelerDifferenceEquation::cloneSrc" << " " << from << " " << to;
+
+    QString basepath = mPkg->getDir(vle::utils::PKG_SOURCE).c_str();
+    vleSm* sm = new vleSm(basepath +"/src/"+ from + ".cpp",
+                          basepath + "/metadata/src/" + from + ".sm");
+
+    QString completeNameToSrc = basepath + "/src/"+ to + ".cpp";
+    QString completeNameToSm = basepath + "/metadata/src/"+ to + ".sm";
+    sm->setClassNameToDoc(to);
+    sm->setSrcPath(completeNameToSrc);
+    sm->setSmPath(completeNameToSm);
+
+    sm->save();
+
+    QFile file(sm->getSrcPath());
+    file.open(QIODevice::WriteOnly);
+    QTextStream stream(&file);
+    stream << getData(sm);
+    file.close();
+}
+}}
+
+Q_EXPORT_PLUGIN2(modeler_de, vle::gvle2::ModelerDifferenceEquation)

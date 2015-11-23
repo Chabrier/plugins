@@ -13,7 +13,7 @@
 #include <QSettings>
 #include <vle/gvle2/plugin_sim.h>
 #include <vle/gvle2/logger.h>
-#include <vle/gvle2/vlevpz.h>
+#include <vle/gvle2/vlevpm.h>
 #include <vle/gvle2/simulation.h>
 #include "simtab.h"
 #include "widtoolbar.h"
@@ -24,10 +24,13 @@
 #include <vle/utils/ModuleManager.hpp>
 #endif
 
+namespace vle {
+namespace gvle2 {
+
 class SimSpacial : public QObject, public PluginSimulator
 {
     Q_OBJECT
-    Q_INTERFACES(PluginSimulator)
+    Q_INTERFACES(vle::gvle2::PluginSimulator)
 
 public:
     SimSpacial();
@@ -39,11 +42,11 @@ public:
     void     delWidgetToolbar();
     void setSettings(QSettings *s);
     void setLogger(Logger *logger);
-    void setVpz(vleVpz *vpz);
-    void *getVpz();
+    void init(vleVpm *vpm);
+    void *getVpm();
     void setPackage(vle::utils::Package *pkg);
 private:
-    QString getShapeName(vleVpz *vpz);
+    QString getShapeName(vleVpm *vpm);
 
 private:
     QString name;
@@ -53,7 +56,7 @@ private:
     widToolbar            *  mWidgetToolbar;
 
 private:
-    vleVpz     *mVpz;
+    vleVpm     *mVpm;
     QString     mShapeKeyName;
     ShapeFile   mShapeFile;
     QString     mShapeFilename;
@@ -61,5 +64,7 @@ private:
     simulationThread *mSimThread;
     vle::utils::Package   *mCurrPackage;
 };
+
+}}
 
 #endif // SIM_SPACIAL_H

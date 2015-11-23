@@ -11,6 +11,9 @@
 #include "widtoolbar.h"
 #include "ui_widtoolbar.h"
 
+namespace vle {
+namespace gvle2 {
+
 /**
  * @brief widToolbar::widToolbar
  *        Default constructor for right column toolbar widget
@@ -85,7 +88,7 @@ void widToolbar::onPaletteSelected(int n)
  * @brief widToolbar::buildViewsList
  *        Load ths list of views from VPZ
  */
-void widToolbar::buildViewsList(vleVpz *vpz)
+void widToolbar::buildViewsList(vleVpm *vpm)
 {
     vle::vpz::Vpz   *oldVpz;
     vle::vpz::Views  curVpzViews;
@@ -94,7 +97,7 @@ void widToolbar::buildViewsList(vleVpz *vpz)
     // only because GVLE2::vleVpz does not support views
     // direct access yet. This must be changed in future.
 
-    QString fileName = vpz->getFilename();
+    QString fileName = vpm->getFilename();
     oldVpz = new vle::vpz::Vpz(fileName.toStdString());
 
     curVpzViews  = oldVpz->project().experiment().views();
@@ -117,3 +120,5 @@ QString widToolbar::getSelectedView()
 {
     return mComboView->currentText();
 }
+
+}}

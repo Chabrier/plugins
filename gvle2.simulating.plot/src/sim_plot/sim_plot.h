@@ -22,10 +22,13 @@
 #include "widtoolbar.h"
 #include "plotsignal.h"
 
+namespace vle {
+namespace gvle2 {
+
 class SimPlot : public QObject, public PluginSimulator
 {
     Q_OBJECT
-    Q_INTERFACES(PluginSimulator)
+    Q_INTERFACES(vle::gvle2::PluginSimulator)
 
 public:
     SimPlot();
@@ -37,8 +40,8 @@ public:
     void     delWidgetToolbar();
     void setSettings(QSettings *s);
     void setLogger(Logger *logger);
-    void setVpz(vleVpz *vpz);
-    void *getVpz();
+    void init(vleVpm *vpm);
+    void *getVpm();
     void setPackage(vle::utils::Package *pkg);
 
 public slots:
@@ -59,7 +62,7 @@ private:
     Logger                *  mLogger;
     SimTab                *  mWidgetTab;
     widToolbar            *  mWidgetToolbar;
-    vleVpz                *  mVpz;
+    vleVpm                *  mVpm;
     vle::utils::Package   *  mCurrPackage;
     QList<plotSignal *>      mPlotSignals;
     QThread               *  mThread;
@@ -69,5 +72,7 @@ private:
     int                      mStepCount;
     double                   mDuration;
 };
+
+}}
 
 #endif // SIM_PLOT_H

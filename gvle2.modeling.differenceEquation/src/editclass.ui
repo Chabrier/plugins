@@ -196,9 +196,6 @@
             </item>
            </layout>
           </item>
-          <item row="0" column="0">
-           <widget class="QListWidget" name="parametersList"/>
-          </item>
           <item row="0" column="1">
            <widget class="QWidget" name="parameterEditBox" native="true">
             <property name="enabled">
@@ -259,6 +256,15 @@
             </layout>
            </widget>
           </item>
+          <item row="0" column="0">
+           <widget class="QTreeWidget" name="parametersList">
+            <column>
+             <property name="text">
+              <string notr="true">1</string>
+             </property>
+            </column>
+           </widget>
+          </item>
          </layout>
         </widget>
         <widget class="QWidget" name="tabVariables">
@@ -271,6 +277,42 @@
             <property name="text">
              <string>Edition of variables is not available yet.</string>
             </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tabCodes">
+         <attribute name="title">
+          <string>Page</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QTabWidget" name="tabWidgetCodes">
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <widget class="QWidget" name="tabCompute">
+             <attribute name="title">
+              <string>Compute</string>
+             </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_6">
+              <item>
+               <widget class="QPlainTextEdit" name="editCompute"/>
+              </item>
+              <item>
+               <widget class="QPushButton" name="buttonCompute">
+                <property name="text">
+                 <string>Set</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="tab_2">
+             <attribute name="title">
+              <string>Tab 2</string>
+             </attribute>
+            </widget>
            </widget>
           </item>
          </layout>

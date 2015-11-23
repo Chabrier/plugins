@@ -15,6 +15,7 @@
 #include "vle/vpz/AtomicModel.hpp"
 
 SimLog::SimLog() {
+    qDebug() << "SimLog::SimLog";
     mLogger = 0;
     mThread = 0;
     mSettings = 0;
@@ -27,6 +28,7 @@ SimLog::SimLog() {
 }
 
 SimLog::~SimLog() {
+     qDebug() << "~SimLog";
     // Nothing to do ...
 }
 

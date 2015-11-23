@@ -14,6 +14,9 @@
 #include <iostream>
 #include "vle/vpz/AtomicModel.hpp"
 
+namespace vle {
+namespace gvle2 {
+
 SimPlot::SimPlot() {
     mLogger = 0;
     mThread = 0;
@@ -216,12 +219,11 @@ void SimPlot::updatePlotSig(plotSignal *plot)
 }
 
 /**
- * @brief SimPlot::setVpz
- *        Set the VPZ package used for the simulation
+ * @brief SimLog::init
  */
-void SimPlot::setVpz(vleVpz *vpz)
+void SimPlot::init(vleVpm *vpm)
 {
-    mVpz = vpz;
+    mVpm = vpm;
 
     vle::vpz::Vpz   *oldVpz;
 
@@ -229,7 +231,7 @@ void SimPlot::setVpz(vleVpz *vpz)
     // only because GVLE2::vleVpz does not support views
     // direct access yet. This must be changed in future.
 
-    QString fileName = vpz->getFilename();
+    QString fileName = vpm->getFilename();
     oldVpz = new vle::vpz::Vpz(fileName.toStdString());
 
     vle::vpz::Observables curVpzObs;
@@ -262,9 +264,9 @@ void SimPlot::setVpz(vleVpz *vpz)
     }
 }
 
-void *SimPlot::getVpz()
+void *SimPlot::getVpm()
 {
-    return (void *)mVpz;
+    return (void *)mVpm;
 }
 
 void SimPlot::startStop()
@@ -303,7 +305,7 @@ void SimPlot::simulationStart()
     // only because GVLE2::vleVpz does not support views
     // direct access yet. This must be changed in future.
 
-    QString fileName = mVpz->getFilename();
+    QString fileName = mVpm->getFilename();
     oldVpz = new vle::vpz::Vpz(fileName.toStdString());
 
     mSimThread = new simPlotThread(oldVpz);
@@ -368,7 +370,7 @@ void SimPlot::simulationGetStep()
     // only because GVLE2::vleVpz does not support views
     // direct access yet. This must be changed in future.
 
-    QString fileName = mVpz->getFilename();
+    QString fileName = mVpm->getFilename();
     oldVpz = new vle::vpz::Vpz(fileName.toStdString());
 
     // Update the progress bar
@@ -552,4 +554,6 @@ void SimPlot::simulationFinished()
     mWidgetToolbar->simStoped();
 }
 
-Q_EXPORT_PLUGIN2(sim_plot, SimPlot)
+}} //namespaces
+
+Q_EXPORT_PLUGIN2(sim_plot, vle::gvle2::SimPlot)

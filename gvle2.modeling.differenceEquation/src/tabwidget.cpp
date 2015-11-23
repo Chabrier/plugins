@@ -9,6 +9,9 @@
 #include "tabwidget.h"
 #include "ui_tabwidget.h"
 
+namespace vle {
+namespace gvle2 {
+
 TabWidget::TabWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::TabWidget)
@@ -20,3 +23,5 @@ TabWidget::~TabWidget()
 {
     delete ui;
 }
+
+}}

@@ -11,10 +11,17 @@
 
 #include <QObject>
 #include <QWidget>
+#include <QMenu>
+#include <QTreeWidget>
+#include <vle/gvle2/vlepackage.h>
+#include "vlesm.h"
 
 namespace Ui {
 class EditClass;
 }
+
+namespace vle {
+namespace gvle2 {
 
 class EditWidget : public QWidget
 {
@@ -27,27 +34,45 @@ public:
     void setClassName(QString name);
     void setModeNew();
     void setModeEdit();
-    int  getParameterCount();
-    QString getParameterName(int row);
-    double  getParameterValue(int row);
+    void setModeEdit2();
+    void setParameters();
+    void setCompute();
+    void setPackage(vle::utils::Package *pkg)
+    {mPkg = pkg;};
+    void setSm(vleSm *sm)
+    {mSm = sm;};
+    vleSm* getSm()
+    {return mSm;}
     void    addParameter(QString name, double v);
+    bool    isValidParameterName(const QString parameterName) const;
+    bool    isUniqParameterName(const QString parameterName) const;
+    bool    allowClose();
 
 public slots:
+    void onModified();
+    void onUndoRedoSm(QDomNode oldValSm, QDomNode newValSm);
     void onAddParameter();
     void onParameterModified(QString text);
     void onRemoveParameter();
     void onRenameSave();
     void onSaveClass();
     void onSaveParameter();
-    void onSelectParameter(int row);
+    void onSetCompute();
+    void onSelectParameter(QTreeWidgetItem * current, QTreeWidgetItem * previous);
 
 signals:
     void nameChanged(QString name);
     void saveClass();
+    void newClass(QString name);
 
 private:
-    Ui::EditClass *ui;
-    QString         mClassName;
+    bool                saved;
+    vleSm               * mSm;
+    vle::utils::Package * mPkg;
+    Ui::EditClass       * ui;
+    QString             mClassName;
 };
+
+}}
 
 #endif // EDITWIDGET_H

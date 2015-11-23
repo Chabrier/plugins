@@ -61,7 +61,7 @@ private:
     vle::utils::Package   *  mCurrPackage;
     QList<QString>           mObsPorts;
     QThread               *  mThread;
-    simLogThread         *  mSimThread;
+    simLogThread          *  mSimThread;
     vle::value::Map       *  mOutputs;
     QMap<QString, int>       mViewLastRow;
     bool                     mSimDataValid;
