@@ -11,22 +11,23 @@
 
 #include <QObject>
 #include <QSettings>
-#include <vle/gvle2/sourcecpp.h>
-#include <vle/gvle2/plugin_modeler.h>
-#include <vle/gvle2/logger.h>
+#include <vle/gvle/sourcecpp.h>
+#include <vle/gvle/plugin_modeler.h>
+#include <vle/gvle/logger.h>
 #include "editwidget.h"
 #include "editmodel.h"
 #include "vlesm.h"
 
 namespace vle {
-namespace gvle2 {
+namespace gvle {
 
 class sourceCpp;
 
 class ModelerDifferenceEquation : public PluginModeler
 {
     Q_OBJECT
-    Q_INTERFACES(vle::gvle2::PluginModeler)
+    Q_PLUGIN_METADATA(IID "fr.inra.vle.gvle.PluginModeler")
+    Q_INTERFACES(vle::gvle::PluginModeler)
 
 public:
     ModelerDifferenceEquation();

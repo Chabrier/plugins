@@ -12,13 +12,13 @@
 #include "vlesm.h"
 #include <iostream>
 #include <sstream>
-#include <vle/gvle2/sourcecpp.h>
-#include <vle/gvle2/sourcecpptemplate.h>
+#include <vle/gvle/sourcecpp.h>
+#include <vle/gvle/sourcecpptemplate.h>
 #include <vle/utils/Template.hpp>
 #include <vle/utils/Tools.hpp>
 
 namespace vle {
-namespace gvle2 {
+namespace gvle {
 
 ModelerDifferenceEquation::ModelerDifferenceEquation() {
     mPkg       = 0;
@@ -156,7 +156,7 @@ QString ModelerDifferenceEquation::getData(vleSm * sm)
     vleTpl.listSymbol().append("val");
 
     QDomNodeList paramsXml = sm->paramsFromDoc();
-    for (unsigned int i = 0; i < paramsXml.length(); i++) {
+    for (int i = 0; i < paramsXml.length(); i++) {
         QDomNode param = paramsXml.item(i);
         std::string paramName = param.attributes().namedItem("param").nodeValue().toStdString();
         std::string paramValue = param.attributes().namedItem("value").nodeValue().toStdString();
@@ -475,5 +475,3 @@ void ModelerDifferenceEquation::cloneSrc(const QString from, const QString to)
     file.close();
 }
 }}
-
-Q_EXPORT_PLUGIN2(modeler_de, vle::gvle2::ModelerDifferenceEquation)

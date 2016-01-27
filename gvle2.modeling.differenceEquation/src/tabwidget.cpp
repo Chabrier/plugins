@@ -10,7 +10,7 @@
 #include "ui_tabwidget.h"
 
 namespace vle {
-namespace gvle2 {
+namespace gvle {
 
 TabWidget::TabWidget(QWidget *parent) :
     QWidget(parent),

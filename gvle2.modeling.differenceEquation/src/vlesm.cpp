@@ -29,7 +29,7 @@
 #include <QDir>
 
 namespace vle {
-namespace gvle2 {
+namespace gvle {
 
 vleDomSm::vleDomSm(QDomDocument* doc): vleDomObject(doc)
 
@@ -206,7 +206,7 @@ vleSm::setParamToDoc(const QString& paramName, const QString& paramValue)
     QDomNodeList parameterList =
             parametersNode.toElement().elementsByTagName("parameter");
 
-    for (unsigned int i = 0; i< parameterList.length(); i++) {
+    for (int i = 0; i< parameterList.length(); i++) {
         QDomNode param = parameterList.at(i);
         for (int j=0; j< param.attributes().size(); j++) {
             if ((param.attributes().item(j).nodeName() == "param") and
@@ -239,7 +239,7 @@ vleSm::rmParamToDoc(const QString& paramName)
     QDomNodeList parameterList =
         parametersNode.toElement().elementsByTagName("parameter");
 
-    for (unsigned int i = 0; i< parameterList.length(); i++) {
+    for (int i = 0; i< parameterList.length(); i++) {
         QDomNode param = parameterList.at(i);
         for (int j = 0; j < param.attributes().size(); j++) {
             if ((param.attributes().item(j).nodeName() == "param") and
@@ -285,7 +285,7 @@ vleSm::getParamValue(const QString& paramName)
                 mDocSm->elementsByTagName("parameters").item(0);
         QDomNodeList parameterList =
                 parametersNode.toElement().elementsByTagName("parameter");
-        for (unsigned int i =0; i< parameterList.length(); i++) {
+        for (int i =0; i< parameterList.length(); i++) {
             QDomNode param = parameterList.item(i);
             if (param.attributes().contains("param") and
                 (param.attributes().namedItem("param").nodeValue() == paramName)) {

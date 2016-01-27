@@ -13,7 +13,7 @@
 #include <QWidget>
 #include <QMenu>
 #include <QTreeWidget>
-#include <vle/gvle2/vlepackage.h>
+#include <vle/gvle/vlepackage.h>
 #include "vlesm.h"
 
 namespace Ui {
@@ -21,7 +21,7 @@ class EditClass;
 }
 
 namespace vle {
-namespace gvle2 {
+namespace gvle {
 
 class EditWidget : public QWidget
 {

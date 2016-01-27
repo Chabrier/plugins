@@ -17,7 +17,7 @@ class TabWidget;
 }
 
 namespace vle {
-namespace gvle2 {
+namespace gvle {
 
 class TabWidget : public QWidget
 {

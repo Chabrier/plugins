@@ -10,7 +10,7 @@
 #include "ui_editmodel.h"
 
 namespace vle {
-namespace gvle2 {
+namespace gvle {
 
 /**
  * @brief EditModel::EditModel
@@ -27,7 +27,7 @@ EditModel::EditModel(QWidget *parent) :
 
     QTableWidget *tParams;
     tParams = ui->tableParameters;
-    tParams->horizontalHeader()->setResizeMode(QHeaderView::Interactive);
+    tParams->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     tParams->horizontalHeader()->setStretchLastSection(true);
 
     QObject::connect(ui->buttonParameterSave, SIGNAL(clicked()),

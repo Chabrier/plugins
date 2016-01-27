@@ -35,6 +35,7 @@ if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_COMPILER_IS_GNUCXX)
   endif ()
 endif ()
 
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH})
 
 ##
 ## Modules
@@ -46,22 +47,15 @@ INCLUDE(CheckLibraryExists)
 INCLUDE(CMakeDetermineCCompiler)
 
 ##
-## Check libraries with pkgconfig
+## Check VLE and package dependencies
 ##
 
 set(VLE_DEBUG 0)
+set(VLE_ABI_VERSION 1.3)
 find_package(VLE REQUIRED)
-
-##
-## Check VLE's packages
-##
-
-set (VleCheckPackage_DIR "${CMAKE_SOURCE_DIR}/cmake")
-FIND_PACKAGE(VleCheckPackage REQUIRED)
-set (VleCheckAndDeclareGeneratedModels_DIR
-  "${CMAKE_SOURCE_DIR}/cmake")
-FIND_PACKAGE(VleCheckAndDeclareGeneratedModels REQUIRED)
-SET(VLE_ABI_VERSION 1.1)
+set (VleUtils_DIR "${VLE_SHARE_DIR}/cmake")
+find_package(VleUtils REQUIRED)
+VleCheckDependencies()
 
 ##
 ## Find boost
@@ -77,12 +71,6 @@ find_package(Boost COMPONENTS unit_test_framework date_time thread filesystem sy
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(XMLDEPS libxml-2.0)
-
-##
-## Find Qt
-##
-set(QT_USE_QTXML TRUE)
-find_package(Qt4 REQUIRED)
 
 ##
 ## Add Intl/Gettext lib

@@ -11,14 +11,14 @@
 
 #include <QTableWidgetItem>
 #include <QWidget>
-#include <vle/gvle2/vlevpz.h>
+#include <vle/gvle/vlevpz.h>
 
 namespace Ui {
 class editModel;
 }
 
 namespace vle {
-namespace gvle2 {
+namespace gvle {
 class sourceCpp;
 
 class EditModel : public QWidget

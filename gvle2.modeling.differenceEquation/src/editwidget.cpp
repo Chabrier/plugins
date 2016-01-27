@@ -14,7 +14,7 @@
 #include <boost/lexical_cast.hpp>
 
 namespace vle {
-namespace gvle2 {
+namespace gvle {
 
 EditWidget::EditWidget(QWidget *parent) :
     QWidget(parent),
@@ -128,7 +128,7 @@ void EditWidget::setParameters()
 {
     ui->parametersList->clear();
     QDomNodeList paramsXml = mSm->paramsFromDoc();
-    for (unsigned int i = 0; i < paramsXml.length(); i++) {
+    for (int i = 0; i < paramsXml.length(); i++) {
         QDomNode param = paramsXml.item(i);
         addParameter(param.attributes().namedItem("param").nodeValue(),
                      param.attributes().namedItem("value").nodeValue().toDouble());
@@ -225,7 +225,7 @@ bool EditWidget::allowClose()
  *
  */
 
-void EditWidget::onSelectParameter(QTreeWidgetItem * current, QTreeWidgetItem * previous)
+    void EditWidget::onSelectParameter(QTreeWidgetItem * current, QTreeWidgetItem * /*previous*/)
 {
     ui->buttonParameter->setEnabled(false);
     if (not current)
@@ -298,7 +298,7 @@ bool EditWidget::isValidParameterName(const QString parameterName) const
 bool EditWidget::isUniqParameterName(const QString parameterName) const
 {
     QDomNodeList paramsXml = mSm->paramsFromDoc();
-    for (unsigned int i = 0; i < paramsXml.length(); i++) {
+    for (int i = 0; i < paramsXml.length(); i++) {
         QDomNode param = paramsXml.item(i);
         if (param.attributes().namedItem("param").nodeValue() ==
             parameterName) {

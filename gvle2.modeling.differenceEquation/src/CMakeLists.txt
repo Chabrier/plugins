@@ -1,42 +1,47 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt4 REQUIRED)
-include(${QT_USE_FILE})
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(XMLDEPS libxml-2.0)
-include_directories(${XMLDEPS_INCLUDE_DIRS})
+find_package(Qt5 COMPONENTS Widgets Xml Gui)
+if (NOT Qt5_FOUND)
+  message(FATAL_ERROR "Qt5 is required")
+endif (NOT Qt5_FOUND)
+if (NOT Qt5Widgets_FOUND)
+  message(FATAL_ERROR "Qt5Widgets is required")
+endif (NOT Qt5Widgets_FOUND)
+if (NOT Qt5Xml_FOUND)
+  message(FATAL_ERROR "Qt5Xml is required")
+endif (NOT Qt5Xml_FOUND)
+if (NOT Qt5Gui_FOUND)
+  message(FATAL_ERROR "Qt5Gui is required")
+endif (NOT Qt5Gui_FOUND)
+
+include_directories(${Qt5Widgets_INCLUDES} ${Qt5Xml_INCLUDES}
+  ${Qt5Gui_INCLUDES})
 
 INCLUDE_DIRECTORIES(${VLE_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${GVLE_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS} ${VLE_BINARY_DIR}/src
+  ${VLE_SOURCE_DIR}/src)
 
-if (VLE_VERSION)
-  include_directories(${VLE_BINARY_DIR}/src ${VLE_SOURCE_DIR}/src
-    ${Boost_INCLUDE_DIRS} ${VLEDEPS_INCLUDE_DIRS})
-  set(V_LIB vlelib)
-  if (WIN32)
-    link_directories(${VLEDEPS_LIBRARY_DIRS} ${Boost_LIBRARY_DIRS})
-  endif (WIN32)
-else (VLE_VERSION)
-  message(STATUS "No VLE_VERSION detected, run standalone build")
-  pkg_check_modules(VLEDEPS REQUIRED vle-1.1)
-  include_directories(${VLEDEPS_INCLUDE_DIRS})
-  link_directories(${VLEDEPS_LIBRARY_DIRS})
-  set(V_LIB "vle-1.1")
-endif (VLE_VERSION)
-
-include_directories(${Boost_INCLUDE_DIRS})
-link_directories(${Boost_LIBRARY_DIRS})
+LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${VLE_LIBRARY_DIRS}
+  ${GVLE_LIBRARY_DIRS})
 
 SET(difference-equation_SOURCES modelerde.cpp editwidget.cpp
     editmodel.cpp vlesm.cpp)
 
-QT4_WRAP_UI(ui_editclass_h editclass.ui)
-QT4_WRAP_UI(ui_editmodel_h editmodel.ui)
+QT5_WRAP_UI(ui_editclass_h editclass.ui)
+QT5_WRAP_UI(ui_editmodel_h editmodel.ui)
+
+ADD_DEFINITIONS(-DQT_PLUGIN)
 
 add_library(modeler-difference-equation SHARED ${difference-equation_SOURCES}
   ${ui_editclass_h} ${ui_editmodel_h} )
 
-target_link_libraries(modeler-difference-equation ${QT_LIBRARIES} ${INTL_LIB})
+add_definitions(${Qt5Widgets_DEFINITIONS} ${Qt5Xml_DEFINITIONS}
+  ${Qt5Gui_DEFINITIONS})
+
+target_link_libraries(modeler-difference-equation ${INTL_LIB} ${GVLE_LIBRARIES}
+  ${VLE_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Gui_LIBRARIES} ${Qt5Xml_LIBRARIES})
 
 INSTALL(TARGETS modeler-difference-equation RUNTIME DESTINATION
-  plugins/gvle2/modeling LIBRARY DESTINATION plugins/gvle2/modeling)
+  plugins/gvle/modeling LIBRARY DESTINATION plugins/gvle/modeling)

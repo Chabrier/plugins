@@ -22,8 +22,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GVLE2_VLESM_H
-#define GVLE2_VLESM_H
+#ifndef GVLE_VLESM_H
+#define GVLE_VLESM_H
 
 #include <QDebug>
 
@@ -42,11 +42,11 @@
 #include <QXmlDefaultHandler>
 #include <vle/value/Value.hpp>
 #include <vle/value/Map.hpp>
-#include <vle/gvle2/vleDomDiffStack.h>
+#include <vle/gvle/vleDomDiffStack.h>
 
 
 namespace vle {
-namespace gvle2 {
+namespace gvle {
 
 /**
  * @brief Class that implements vleDomObject especially for vleSm
